@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@emotion/css": "*"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.2.65",
+    "jsdom": "^17.0.0",
+    "swc-loader": "^0.1.14",
+    "typescript": "^4.2.4",
+    "webpack": "^5.45.1",
+    "webpack-cli": "^4.7.0"
+  }
+}
