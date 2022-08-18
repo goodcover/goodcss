@@ -1,6 +1,5 @@
 package web.css
 
-
 /**
   * A CSS selector-like.
   * - selector: `.a, .b .c`

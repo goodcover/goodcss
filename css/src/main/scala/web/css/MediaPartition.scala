@@ -5,7 +5,6 @@ import cats.data.NonEmptySeq
 // import web.base.react.hooks._
 // import web.theme._
 
-
 import scalajs.js
 
 /**

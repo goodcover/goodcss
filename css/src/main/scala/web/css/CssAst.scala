@@ -12,28 +12,29 @@ object Css {
   val empty: Css = Empty
 
   implicit val printer: CssPrinter[Css] = _ match {
-    case Empty => ""
-    case CssScope(sel, body) =>
+    case Empty                         => ""
+    case CssScope(sel, body)           =>
       val wrapped = body.map(_.print).mkString("\n")
       sel match {
         case None                    => wrapped
         case Some(MediaQuery("all")) => wrapped
         case Some(sel)               => s"${sel.selector} { $wrapped }"
       }
-    case CssRule(name, rhs, important)  =>
+    case CssRule(name, rhs, important) =>
       val bang = if (important) " !important" else ""
       rhs match {
-        case CssRhs.Empty => ""
+        case CssRhs.Empty      => ""
         case CssRhs.Value(x)   => s"$name: ${x.print}$bang;"
         case CssRhs.Values(xs) =>
           xs.map {
             case (MediaQuery("all"), x) => s"$name: ${x.print}$bang;"
             case (q, x)                 => s"${q.selector} { $name: ${x.print}$bang; }"
-          }.toSeq.mkString("\n")
+          }.toSeq
+            .mkString("\n")
       }
   }
 
-  implicit def fromOption(o: Option[Css]): Css = o.getOrElse(Empty)
+  implicit def fromOption(o: Option[Css]): Css      = o.getOrElse(Empty)
   implicit def fromUndefOr(o: js.UndefOr[Css]): Css = o.getOrElse(Empty)
 
   implicit val monoid: Monoid[Css] = Monoid.instance(empty, css(_, _))
