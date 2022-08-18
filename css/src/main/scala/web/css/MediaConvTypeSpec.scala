@@ -32,14 +32,14 @@ object CssMediaConvTypeSpec {
   new ConversionTo[CssRhs[CssValue]] {
     yes(summon[CssValue, MediaQuery])
     yes(summon[CssValue, MediaProfile])
-    // yes(summon[CssKeyword, MediaProfile])
+    yes(summon[CssKeyword, MediaProfile])
   }
 
   new ConversionTo[CssRhs[CssExpr]] {
     yes(summon[CssExpr, MediaQuery])
     yes(summon[CssExpr, MediaProfile])
-    // yes(summon[CssScalar[Num], MediaProfile])
-    // yes(summon[CssScalar[Px], MediaQuery])
+    yes(summon[CssScalar[Num], MediaProfile])
+    yes(summon[CssScalar[Px], MediaQuery])
 
     no(summon[CssScalar[Px], MediaProfile])
   }
@@ -47,8 +47,8 @@ object CssMediaConvTypeSpec {
   new ConversionTo[CssClamp] {
     yes(summon[CssScalar[Px], MediaProfile])
 
-    // no(summon[CssScalar[Px], MediaQuery])
-    // no(summon[CssScalar[Num], MediaProfile])
+    no(summon[CssScalar[Px], MediaQuery])
+    no(summon[CssScalar[Num], MediaProfile])
     no(summon[CssExpr, MediaProfile])
   }
 }

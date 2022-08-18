@@ -27,9 +27,10 @@ object CssRhs {
     }
   }
 
-  @inline implicit def toBinOpOps(x: CssRhs[CssExpr]): CssBinOpOps[CssRhs[CssExpr]] = new CssBinOpOps[CssRhs[CssExpr]](x)
+  @inline implicit def toBinOpOps(x: CssRhs[CssExpr]): CssBinOpOps[CssRhs[CssExpr]] =
+    new CssBinOpOps[CssRhs[CssExpr]](x)
 
-  implicit def eq[A]: Eq[CssRhs[A]] = (x, y) => x.values == y.values
+  implicit def eq[A]: Eq[CssRhs[A]]         = (x, y) => x.values == y.values
   implicit def monoid[A]: Monoid[CssRhs[A]] = Monoid.instance(Values(Nil), (x, y) => Values(x.values ++ y.values))
 
   implicit class Ops(val rhs: CssRhs[CssExpr]) extends AnyVal {
@@ -49,7 +50,7 @@ object CssValue {
     case CssValueVar(name)           => s"var($name)"
     case CssHsl(h, s, l, a)          => s"hsl($h $s% $l% / $a)"
     case CssRgb(r, g, b, a)          => s"rgb(${r * 255} ${g * 255} ${b * 255} / $a)"
-    case x: CssExpr                  => x.print
+    case x: CssExpr                  => CssExpr.printer.print(x)
   }
 
   @inline implicit def toRhs(x: CssValue): CssRhs[CssValue] = CssRhs.Value(x)
@@ -124,9 +125,10 @@ object CssRgb {
 }
 
 sealed trait CssExpr extends CssValue with CssSize {
+
   def unary_- : CssExpr = this match {
     case x: CssScalar[_] => -x
-    case x => 0.n - x
+    case x               => 0.px - x
   }
 }
 
@@ -136,6 +138,17 @@ object CssExpr {
   final case class Unsafe(exprString: String)                     extends CssExpr
 
   val printer: CssPrinter[CssExpr] = _ match {
+    case x: CssScalar[_]   => print(x)
+    case x: CssExpr.Op     => s"calc(${print(x)})"
+    case x: CssExpr.Call   => print(x)
+    case x: CssExprVar     => print(x)
+    case x: CssExpr.Unsafe => s"calc(${print(x)})"
+  }
+
+  @inline implicit def toBinOpOps(x: CssExpr): CssBinOpOps[CssExpr] = new CssBinOpOps[CssExpr](x)
+  @inline implicit def toRhs(x: CssExpr): CssRhs[CssExpr]           = CssRhs.Value(x)
+
+  private def print(expr: CssExpr): String = expr match {
     case x: CssScalar[_]       => x.print
     case CssExpr.Op(l, op, r)  => s"${bracket(l)} ${op.token} ${bracket(r)}"
     case CssExpr.Call(f, args) => args.map(_.print).mkString(s"$f(", ", ", ")")
@@ -143,18 +156,12 @@ object CssExpr {
     case CssExpr.Unsafe(s)     => s
   }
 
-  @inline implicit def toBinOpOps(x: CssExpr): CssBinOpOps[CssExpr] = new CssBinOpOps[CssExpr](x)
-  @inline implicit def toRhs(x: CssExpr): CssRhs[CssExpr] = CssRhs.Value(x)
-
-  private def bracket(expr: CssExpr): String = {
-    val print = CssPrinter[CssExpr].print(_)
-    expr match {
-      case x: CssScalar[_] => print(x)
-      case x: Op           => s"(${print(x)})"
-      case x: Call         => print(x)
-      case x: CssExprVar   => print(x)
-      case x: Unsafe       => s"(${print(x)})"
-    }
+  private def bracket(expr: CssExpr): String = expr match {
+    case x: CssScalar[_] => print(x)
+    case x: Op           => s"(${print(x)})"
+    case x: Call         => print(x)
+    case x: CssExprVar   => print(x)
+    case x: Unsafe       => s"(${print(x)})"
   }
 
 }

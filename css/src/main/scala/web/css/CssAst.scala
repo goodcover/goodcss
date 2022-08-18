@@ -23,11 +23,11 @@ object Css {
     case CssRule(name, rhs, important)  =>
       val bang = if (important) " !important" else ""
       rhs match {
-        case CssRhs.Value(x)   => s"$name: ${x.print}$bang"
+        case CssRhs.Value(x)   => s"$name: ${x.print}$bang;"
         case CssRhs.Values(xs) =>
           xs.map {
-            case (MediaQuery("all"), x) => s"$name: ${x.print}$bang"
-            case (q, x)                 => s"${q.selector} { ${x.print}$bang }"
+            case (MediaQuery("all"), x) => s"$name: ${x.print}$bang;"
+            case (q, x)                 => s"${q.selector} { $name: ${x.print}$bang; }"
           }.mkString("\n")
       }
   }
@@ -48,7 +48,7 @@ object ClassName {
   implicit val eq: Eq[ClassName] = Eq.fromUniversalEquals
 
   implicit val monoid: Monoid[ClassName] =
-    Monoid.instance(empty, (x, y) => ClassName(s"${x.unwrap} ".trim() + y.unwrap))
+    Monoid.instance(empty, (x, y) => ClassName(s"${x.unwrap} ".stripLeading + y.unwrap))
 }
 
 final case class CssScope private[css] (selector: Option[CssSelector], body: Seq[Css]) extends Css
