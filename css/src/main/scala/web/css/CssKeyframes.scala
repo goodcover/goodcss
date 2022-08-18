@@ -3,7 +3,6 @@ package web.css
 import io.estatico.newtype.macros.newtype
 import io.estatico.newtype.ops.toCoercibleIdOps
 import web.css.CssKeyframes.{KeyframeBlock, KeyframeSelector}
-import web.css.CssPrinter.ops._
 
 trait CssKeyframes {
 

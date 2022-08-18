@@ -8,7 +8,7 @@ import scalajs.js.annotation.JSImport
 object GoodMotion {
   @inline def css(cssString: String): ClassName = ClassName(Emotion.css(cssString))
 
-  @inline def cx(classNames: ClassName*): String = Emotion.cx(classNames.map(_.className): _*)
+  @inline def cx(classNames: ClassName*): String = Emotion.cx(classNames.map(_.unwrap): _*)
 
   @inline def keyframes(cssStrings: String*): CssKeyword = CssKeyword(Emotion.keyframes(cssStrings: _*))
 

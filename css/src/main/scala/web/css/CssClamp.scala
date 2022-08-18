@@ -24,6 +24,7 @@ object CssClamp {
   @inline implicit def toBinOpOps(x: CssClamp): CssBinOpOps[CssClamp] = new CssBinOpOps[CssClamp](x)
 
   @inline implicit def toDim(x: CssClamp): CssDim = x.expr
+  @inline implicit def toSize(x: CssClamp): CssSize = x.expr
 
   def breakpoint(width: CssScalar[Px]): CssExpr = {
     val w1          = width - 1.px

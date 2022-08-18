@@ -2,7 +2,7 @@ package web.css
 
 import cats.data.NonEmptySeq
 
-trait CssMediaConv[A, -Q] {
+trait CssMediaConv[-A, -Q] {
   type T
 
   def apply(xs: NonEmptySeq[(Q, A)]): T

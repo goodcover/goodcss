@@ -7,10 +7,7 @@ trait CssPrinter[-A] {
 object CssPrinter {
   @inline def apply[A](implicit p: CssPrinter[A]): CssPrinter[A] = p
 
-  object ops {
-
-    implicit class CssPrinterOps[A: CssPrinter](target: A) {
-      def print: String = CssPrinter[A].print(target)
-    }
+  class Ops[A: CssPrinter](target: A) {
+    def print: String = CssPrinter[A].print(target)
   }
 }

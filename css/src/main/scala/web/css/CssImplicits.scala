@@ -9,15 +9,15 @@ trait CssImplicits {
 
   implicit def cssToCssOps(css: Css): CssOps = new CssOps(css)
 
-  implicit def ruleSyntaxProp(name: CssProp): CssRuleSyntax = new CssRuleSyntax(name)
+  implicit def ruleSyntaxForProp(name: CssProp): CssRuleValueSyntax = new CssRuleValueSyntax(name.propName)
 
-  implicit def ruleSyntaxExprVar(name: CssExprVar): CssExprVarRuleSyntax =
-    new CssExprVarRuleSyntax(name)
+  implicit def ruleSyntaxForExprVar(name: CssExprVar): CssRuleExprSyntax =
+    new CssRuleExprSyntax(name.varName)
 
-  implicit def ruleSyntaxValueVar(name: CssValueVar): CssValueVarRuleSyntax =
-    new CssValueVarRuleSyntax(name)
+  implicit def ruleSyntaxForValueVar(name: CssValueVar): CssRuleValueSyntax =
+    new CssRuleValueSyntax(name.varName)
 
-  implicit def ruleSyntaxMetaProp(name: CssMetaProp): CssMetaRuleSyntax = new CssMetaRuleSyntax(name)
+  implicit def ruleSyntaxForMetaProp(name: CssMetaProp): CssRulePropSyntax = new CssRulePropSyntax(name.propName)
 
   implicit def intScalarOps(n: Int)       = new CssNumberScalarOps(n.toDouble)
   implicit def doubleScalarOps(n: Double) = new CssNumberScalarOps(n)

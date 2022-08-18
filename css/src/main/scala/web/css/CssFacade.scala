@@ -1,8 +1,6 @@
 package web.css
 
-import scala.scalajs.js
 import cats.data.NonEmptySeq
-import web.css.MediaPartition._
 
 trait CssFacade extends CssKeyframes {
   def css(css: Css*): Css                      = CssScope(None, css)
@@ -47,36 +45,7 @@ trait CssFacade extends CssKeyframes {
   def translateX(x: CssExpr): CssExpr            = call("translateX", x)
   def translateY(y: CssExpr): CssExpr            = call("translateY", y)
 
-  def boxForeground(h: js.UndefOr[Int]): CssHsl = h.fold(CssHsl(0, 0, 35))(CssHsl(_, 100, 25))
-  def boxBackground(h: js.UndefOr[Int]): CssHsl = h.fold(CssHsl(0, 0, 95))(CssHsl(_, 100, 95))
-  def boxOutline(h: js.UndefOr[Int]): CssHsl    = h.fold(CssHsl(0, 0, 80))(CssHsl(_, 70, 70))
-
-  def boxColors(h: js.UndefOr[Int]): Css =
-    css(color :- boxForeground(h), backgroundColor :- boxBackground(h), borderColor :- boxOutline(h))
-
   def byFold[A, Q](x: (Q, A), xs: (Q, A)*)(implicit conv: CssMediaConv[A, Q]): conv.T = conv(NonEmptySeq(x, xs))
-
-  def byDevice[A](phone: A, tablet: A, desktop: A)(implicit
-    pmap: (ByDevice => A) => NonEmptySeq[(MediaProfile, A)],
-    conv: CssMediaConv[A, MediaProfile]
-  ): conv.T = conv(pmap(ByDevice.fold(phone, tablet, desktop)))
-
-  def byPhone[A](phone: A, notPhone: A)(implicit
-    pmap: (ByDevice => A) => NonEmptySeq[(MediaProfile, A)],
-    conv: CssMediaConv[A, MediaProfile]
-  ): conv.T =
-    byDevice(phone, notPhone, notPhone)
-
-  def byDesktop[A](mobile: A, desktop: A)(implicit
-    pmap: (ByDevice => A) => NonEmptySeq[(MediaProfile, A)],
-    conv: CssMediaConv[A, MediaProfile]
-  ): conv.T =
-    byDevice(mobile, mobile, desktop)
-
-  def byColumn[A](one: A, two: A)(implicit
-    pmap: (ByColumn => A) => NonEmptySeq[(MediaProfile, A)],
-    conv: CssMediaConv[A, MediaProfile]
-  ): conv.T = conv(pmap(ByColumn.fold(one, two)))
 
   def stackingContext(zIndex: Int = 0, position: CssKeyword = relative): Css =
     css(prop.zIndex :- zIndex.n, prop.position :- position)

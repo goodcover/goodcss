@@ -2,9 +2,8 @@ package web.css
 
 import scala.scalajs.js
 import cats.syntax.functor._
-import cats.Functor
+import cats.{Eq, Functor, Monoid}
 import scala.concurrent.duration._
-import web.css.CssPrinter.ops._
 import eu.timepit.refined.auto._
 
 sealed trait CssRhs[+A] {
@@ -12,6 +11,7 @@ sealed trait CssRhs[+A] {
 }
 
 object CssRhs {
+  val empty: CssRhs[CssValue] = Values(Nil)
 
   final case class Value[A](value: A) extends CssRhs[A] {
     override val values: Seq[(MediaQuery, A)] = Seq(MediaQuery.all -> value)
@@ -25,6 +25,15 @@ object CssRhs {
       case Value(x)   => Value(f(x))
       case Values(xs) => Values(xs.map(_.map(f)))
     }
+  }
+
+  @inline implicit def toBinOpOps(x: CssRhs[CssExpr]): CssBinOpOps[CssRhs[CssExpr]] = new CssBinOpOps[CssRhs[CssExpr]](x)
+
+  implicit def eq[A]: Eq[CssRhs[A]] = (x, y) => x.values == y.values
+  implicit def monoid[A]: Monoid[CssRhs[A]] = Monoid.instance(Values(Nil), (x, y) => Values(x.values ++ y.values))
+
+  implicit class Ops(val rhs: CssRhs[CssExpr]) extends AnyVal {
+    def unary_- : CssRhs[CssExpr] = rhs.map(-_)
   }
 }
 
@@ -42,9 +51,13 @@ object CssValue {
     case CssRgb(r, g, b, a)          => s"rgb(${r * 255} ${g * 255} ${b * 255} / $a)"
     case x: CssExpr                  => x.print
   }
+
+  @inline implicit def toRhs(x: CssValue): CssRhs[CssValue] = CssRhs.Value(x)
 }
 
-final case class CssKeyword(keyword: String) extends CssValue
+sealed trait CssSize extends CssValue
+
+final case class CssKeyword(keyword: String) extends CssValue with CssSize
 
 final case class CssQuoted(text: String) extends CssValue
 
@@ -110,14 +123,19 @@ object CssRgb {
   def fromHsl(hsl: CssHsl): CssRgb = fromHsl(hsl.h, hsl.s, hsl.l, hsl.a)
 }
 
-sealed trait CssExpr extends CssValue
+sealed trait CssExpr extends CssValue with CssSize {
+  def unary_- : CssExpr = this match {
+    case x: CssScalar[_] => -x
+    case x => 0.n - x
+  }
+}
 
 object CssExpr {
   final case class Op(l: CssExpr, op: CssBinOperator, r: CssExpr) extends CssExpr
   final case class Call(f: String, args: Seq[CssExpr])            extends CssExpr
   final case class Unsafe(exprString: String)                     extends CssExpr
 
-  implicit val printer: CssPrinter[CssExpr] = _ match {
+  val printer: CssPrinter[CssExpr] = _ match {
     case x: CssScalar[_]       => x.print
     case CssExpr.Op(l, op, r)  => s"${bracket(l)} ${op.token} ${bracket(r)}"
     case CssExpr.Call(f, args) => args.map(_.print).mkString(s"$f(", ", ", ")")
@@ -126,7 +144,7 @@ object CssExpr {
   }
 
   @inline implicit def toBinOpOps(x: CssExpr): CssBinOpOps[CssExpr] = new CssBinOpOps[CssExpr](x)
-  @inline implicit def toDim(x: CssExpr): CssDim = CssRhs.Value(x)
+  @inline implicit def toRhs(x: CssExpr): CssRhs[CssExpr] = CssRhs.Value(x)
 
   private def bracket(expr: CssExpr): String = {
     val print = CssPrinter[CssExpr].print(_)
@@ -168,7 +186,7 @@ final case class CssScalar[Q](unitless: Double)(implicit val unit: UnitSuffix[Q]
   @inline def <=(r: CssScalar[Q]): Boolean = this lte r
   @inline def >=(r: CssScalar[Q]): Boolean = this gte r
 
-  def unary_- : CssScalar[Q] = CssScalar[Q](-unitless)
+  override def unary_- : CssScalar[Q] = CssScalar[Q](-unitless)
 
   def n: CssScalar[Num] = CssScalar[Num](unitless)
 
@@ -183,6 +201,9 @@ object CssScalar {
 
   @inline implicit def toBinOpOps[Q](x: CssScalar[Q]): CssBinOpOps[CssScalar[Q]] = new CssBinOpOps[CssScalar[Q]](x)
 
+  // Without this, CssBinOp[Add.type, CssExpr, CssScalar[Px]] doesn't get summoned. o_O
+  @inline implicit def toExpr[Q](x: CssScalar[Q]): CssExpr = x
+
   implicit def secToFiniteDuration(s: CssScalar[Sec]): FiniteDuration = s.unitless.seconds
   implicit def msToFiniteDuration(s: CssScalar[Ms]): FiniteDuration   = s.unitless.milliseconds
 
@@ -190,6 +211,7 @@ object CssScalar {
 }
 
 object CssDim {
+  val empty: CssDim = CssRhs.Values[CssExpr](Nil)
 
   def mapN(f: Seq[CssExpr] => CssExpr): Seq[CssDim] => CssDim = dim => {
     val values = dim
