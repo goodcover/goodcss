@@ -24,7 +24,7 @@ trait CssMediaConvLowPriorityImplicits2 extends CssMediaConvLowPriorityImplicits
   sealed class CssMediaConvRhs extends CssMediaConv[CssValue, MediaQuery] {
     type T = CssRhs[CssValue]
 
-    def apply(xs: NonEmptySeq[(MediaQuery, CssValue)]): CssRhs[CssValue] = CssRhs.Values(xs.toSeq)
+    def apply(xs: NonEmptySeq[(MediaQuery, CssValue)]): CssRhs[CssValue] = CssRhs.Values(xs)
   }
 
   implicit def cssMediaConvRhs: CssMediaConvRhs = new CssMediaConvRhs
@@ -41,7 +41,7 @@ trait CssMediaConvLowPriorityImplicits1 extends CssMediaConvLowPriorityImplicits
       }
       // Specialize the output to CssClamp if all inputs meet the criteria.
       if (pixels.length == xs.length) CssRhs.Value(CssClamp(NonEmptySeq.fromSeqUnsafe(pixels)).expr)
-      else CssRhs.Values(xs.toSeq)
+      else CssRhs.Values(xs)
     }
   }
 

@@ -3,6 +3,7 @@ package web.css
 import scala.scalajs.js
 import cats.syntax.functor._
 import cats.{Eq, Functor, Monoid}
+import cats.data.NonEmptySeq
 import scala.concurrent.duration._
 import eu.timepit.refined.auto._
 
@@ -11,17 +12,30 @@ sealed trait CssRhs[+A] {
 }
 
 object CssRhs {
-  val empty: CssRhs[CssValue] = Values(Nil)
+
+  case object Empty extends CssRhs[Nothing] {
+    override def values: Seq[(MediaQuery, Nothing)] = Nil
+  }
 
   final case class Value[A](value: A) extends CssRhs[A] {
     override val values: Seq[(MediaQuery, A)] = Seq(MediaQuery.all -> value)
   }
 
-  final case class Values[A](values: Seq[(MediaQuery, A)]) extends CssRhs[A]
+  final case class Values[A](queryMap: NonEmptySeq[(MediaQuery, A)]) extends CssRhs[A] {
+    override val values: Seq[(MediaQuery, A)] = queryMap.toSeq
+  }
+
+  val empty: CssRhs[CssValue] = Empty
+
+  def apply[A](values: Seq[(MediaQuery, A)]): CssRhs[A] = values match {
+    case Seq((MediaQuery("all"), x)) => Value(x)
+    case xs                          => NonEmptySeq.fromSeq(xs).map(Values(_)).getOrElse(Empty)
+  }
 
   implicit val cssRhsFunctor: Functor[CssRhs] = new Functor[CssRhs] {
 
     override def map[A, B](fa: CssRhs[A])(f: A => B): CssRhs[B] = fa match {
+      case Empty      => Empty
       case Value(x)   => Value(f(x))
       case Values(xs) => Values(xs.map(_.map(f)))
     }
@@ -31,7 +45,7 @@ object CssRhs {
     new CssBinOpOps[CssRhs[CssExpr]](x)
 
   implicit def eq[A]: Eq[CssRhs[A]]         = (x, y) => x.values == y.values
-  implicit def monoid[A]: Monoid[CssRhs[A]] = Monoid.instance(Values(Nil), (x, y) => Values(x.values ++ y.values))
+  implicit def monoid[A]: Monoid[CssRhs[A]] = Monoid.instance(Empty, (x, y) => CssRhs(x.values ++ y.values))
 
   implicit class Ops(val rhs: CssRhs[CssExpr]) extends AnyVal {
     def unary_- : CssRhs[CssExpr] = rhs.map(-_)
@@ -218,7 +232,7 @@ object CssScalar {
 }
 
 object CssDim {
-  val empty: CssDim = CssRhs.Values[CssExpr](Nil)
+  val empty: CssDim = CssRhs.Empty
 
   def mapN(f: Seq[CssExpr] => CssExpr): Seq[CssDim] => CssDim = dim => {
     val values = dim
@@ -233,7 +247,7 @@ object CssDim {
         }
       }
       .map(_.map(f))
-    CssRhs.Values(values)
+    CssRhs(values)
   }
 
   def zip(a: CssDim, b: CssDim)(f: (CssExpr, CssExpr) => CssExpr): CssDim =

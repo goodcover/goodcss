@@ -23,12 +23,13 @@ object Css {
     case CssRule(name, rhs, important)  =>
       val bang = if (important) " !important" else ""
       rhs match {
+        case CssRhs.Empty => ""
         case CssRhs.Value(x)   => s"$name: ${x.print}$bang;"
         case CssRhs.Values(xs) =>
           xs.map {
             case (MediaQuery("all"), x) => s"$name: ${x.print}$bang;"
             case (q, x)                 => s"${q.selector} { $name: ${x.print}$bang; }"
-          }.mkString("\n")
+          }.toSeq.mkString("\n")
       }
   }
 
