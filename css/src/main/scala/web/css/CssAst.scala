@@ -14,7 +14,7 @@ object Css {
   implicit val printer: CssPrinter[Css] = _ match {
     case Empty => ""
     case CssScope(sel, body) =>
-      val wrapped = body.map(_.print).mkString(" ")
+      val wrapped = body.map(_.print).mkString("\n")
       sel match {
         case None                    => wrapped
         case Some(MediaQuery("all")) => wrapped
@@ -40,6 +40,8 @@ object Css {
 
 final case class ClassName private[css] (name: String) {
   def unwrap: String = name
+
+  override def toString(): String = name
 }
 
 object ClassName {
