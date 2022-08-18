@@ -1,6 +1,5 @@
 package web.css
 
-import scala.scalajs.js
 
 /**
   * A CSS selector-like.
@@ -17,6 +16,8 @@ object CssSelector {
   private[css] def apply(sel: String): CssSelector = new CssSelector { override val selector = sel }
 
   private[css] def unapply(sel: CssSelector): Option[String] = Some(sel.selector)
+
+  implicit def fromString(s: String): CssSelector = apply(s)
 }
 
 /**
@@ -62,16 +63,17 @@ object MediaQuery {
 /**
   * Fixed media profile. Used in Theme to define desktop, tablet, phone break points.
   */
-final case class MediaProfile(minWidth: Double = 0, maxWidth: Double = Double.PositiveInfinity) extends MediaQuery {
+final case class MediaProfile(minWidth: CssScalar[Px] = 0.px, maxWidth: CssScalar[Px] = Double.PositiveInfinity.px)
+    extends MediaQuery {
 
-  def encompassesWidth(width: Double): Boolean =
+  def encompassesWidth(width: CssScalar[Px]): Boolean =
     minWidth <= width && maxWidth >= width
 
-  private val isEmpty = minWidth == 0 && maxWidth == Double.PositiveInfinity
+  private val isEmpty = minWidth == 0.px && maxWidth == Double.PositiveInfinity.px
 
   private def nonEmptyQuery  = Seq(
-    Option.unless(minWidth == 0)(s"(min-width: ${minWidth}px)"),
-    Option.unless(maxWidth == Double.PositiveInfinity)(s"(max-width: ${maxWidth}px)"),
+    Option.unless(minWidth == 0.px)(s"(min-width: $minWidth)"),
+    Option.unless(maxWidth == Double.PositiveInfinity.px)(s"(max-width: $maxWidth)"),
   ).collect { case Some(x) => x }.reduce((x, y) => s"$x and $y")
 
   override val query: String =
@@ -79,11 +81,12 @@ final case class MediaProfile(minWidth: Double = 0, maxWidth: Double = Double.Po
     else nonEmptyQuery
 
   def and(that: MediaProfile): MediaProfile =
-    MediaProfile(js.Math.max(minWidth, that.minWidth), js.Math.min(maxWidth, that.maxWidth))
+    MediaProfile(CssScalar.max(minWidth, that.minWidth), CssScalar.min(maxWidth, that.maxWidth))
 
-  // def breakpoint: CssExpr = CssClamp.breakpoint(minWidth)
+  def breakpoint: CssExpr = CssClamp.breakpoint(minWidth)
 }
 
 object MediaProfile {
+
   val all: MediaProfile = MediaProfile()
 }
