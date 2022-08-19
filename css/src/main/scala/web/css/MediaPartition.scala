@@ -1,9 +1,6 @@
 package web.css
 
 import cats.data.NonEmptySeq
-// import org.scalajs.dom.{console, window}
-// import web.base.react.hooks._
-// import web.theme._
 
 import scalajs.js
 

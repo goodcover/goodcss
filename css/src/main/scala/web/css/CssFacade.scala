@@ -3,10 +3,16 @@ package web.css
 import cats.data.NonEmptySeq
 
 trait CssFacade extends CssKeyframes {
-  def css(css: Css*): Css                      = CssScope(None, css)
-  def scope(sel: CssSelector)(body: Css*): Css = CssScope(Some(sel), body)
-  def cn(body: Css*): ClassName                = css(body: _*).cn
-  def named(name: String): ClassName           = ClassName(s"gcn-$name")
+  def css(css: Css*): Css               = CssScope(None, css)
+  def css(sel: CssSelector)(body: Css*) = CssScope(Some(sel), body)
+
+  def cn(body: Css*): ClassName                   = CssScope(None, body).cn
+  def cn(sel: CssSelector)(body: Css*): ClassName = CssScope(Some(sel), body).cn
+
+  def clobber(body: Css*): Css                         = CssScope(Some("&&&&"), body)
+  def clobber(selector: String = "&")(body: Css*): Css = CssScope(Some(selector * 4), body)
+
+  def named(name: String): ClassName = ClassName(s"gcn-$name")
 
   def exprVar(name: String): CssExprVar   = CssExprVar(name)
   def valueVar(name: String): CssValueVar = CssValueVar(name)
@@ -49,6 +55,4 @@ trait CssFacade extends CssKeyframes {
 
   def stackingContext(zIndex: Int = 0, position: CssKeyword = relative): Css =
     css(prop.zIndex :- zIndex.n, prop.position :- position)
-
-  def clobber(css: Css): ClassName = cn(scope("&&&&")(css))
 }
