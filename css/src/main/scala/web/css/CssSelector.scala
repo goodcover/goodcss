@@ -1,5 +1,7 @@
 package web.css
 
+import cats.Eq
+
 /**
   * A CSS selector-like.
   * - selector: `.a, .b .c`
@@ -17,6 +19,8 @@ object CssSelector {
   private[css] def unapply(sel: CssSelector): Option[String] = Some(sel.selector)
 
   implicit def fromString(s: String): CssSelector = apply(s)
+
+  implicit val eq: Eq[CssSelector] = _.selector == _.selector
 }
 
 /**
@@ -57,6 +61,8 @@ object MediaQuery {
   private[css] def unapply(q: MediaQuery): Option[String] = Some(q.query)
 
   val all: MediaQuery = apply("all")
+
+  implicit val eq: Eq[MediaQuery] = _.selector == _.selector
 }
 
 /**

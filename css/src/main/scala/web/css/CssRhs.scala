@@ -2,6 +2,7 @@ package web.css
 
 import scala.scalajs.js
 import cats.syntax.functor._
+import cats.syntax.eq._
 import cats.{Eq, Functor, Monoid}
 import cats.data.NonEmptySeq
 import scala.concurrent.duration._
@@ -44,7 +45,7 @@ object CssRhs {
   @inline implicit def toBinOpOps(x: CssRhs[CssExpr]): CssBinOpOps[CssRhs[CssExpr]] =
     new CssBinOpOps[CssRhs[CssExpr]](x)
 
-  implicit def eq[A]: Eq[CssRhs[A]]         = (x, y) => x.values == y.values
+  implicit def eq[A: Eq]: Eq[CssRhs[A]]     = _.values === _.values
   implicit def monoid[A]: Monoid[CssRhs[A]] = Monoid.instance(Empty, (x, y) => CssRhs(x.values ++ y.values))
 
   implicit class Ops(val rhs: CssRhs[CssExpr]) extends AnyVal {
@@ -68,6 +69,19 @@ object CssValue {
   }
 
   @inline implicit def toRhs(x: CssValue): CssRhs[CssValue] = CssRhs.Value(x)
+
+  implicit val eq: Eq[CssValue] = (x, y) =>
+    (x, y) match {
+      case (CssKeyword(x), CssKeyword(y))   => x == y
+      case (CssQuoted(x), CssQuoted(y))     => x == y
+      case (x: CssSpaced, y: CssSpaced)     => x.values === y.values && x.separator == y.separator
+      case (x: CssBuiltin, y: CssBuiltin)   => x.name == y.name && x.args == y.args && x.separator == y.separator
+      case (CssValueVar(x), CssValueVar(y)) => x == y
+      case (x: CssHsl, y: CssHsl)           => x == y
+      case (x: CssRgb, y: CssRgb)           => x == y
+      case (x: CssExpr, y: CssExpr)         => CssExpr.eq.eqv(x, y)
+      case _                                => false
+    }
 }
 
 sealed trait CssSize extends CssValue
@@ -159,16 +173,26 @@ object CssExpr {
     case x: CssExpr.Unsafe => s"calc(${print(x)})"
   }
 
-  @inline implicit def toBinOpOps(x: CssExpr): CssBinOpOps[CssExpr] = new CssBinOpOps[CssExpr](x)
-  @inline implicit def toRhs(x: CssExpr): CssRhs[CssExpr]           = CssRhs.Value(x)
-
-  private def print(expr: CssExpr): String = expr match {
+  /** Print without wrapping in calc() */
+  def print(expr: CssExpr): String = expr match {
     case x: CssScalar[_]       => x.print
     case CssExpr.Op(l, op, r)  => s"${bracket(l)} ${op.token} ${bracket(r)}"
-    case CssExpr.Call(f, args) => args.map(_.print).mkString(s"$f(", ", ", ")")
+    case CssExpr.Call(f, args) => args.map(print).mkString(s"$f(", ", ", ")")
     case CssExprVar(name)      => s"var($name)"
     case CssExpr.Unsafe(s)     => s
   }
+
+  @inline implicit def toBinOpOps(x: CssExpr): CssBinOpOps[CssExpr] = new CssBinOpOps[CssExpr](x)
+  @inline implicit def toRhs(x: CssExpr): CssRhs[CssExpr]           = CssRhs.Value(x)
+
+  implicit val eq: Eq[CssExpr] = (x, y) =>
+    (x, y) match {
+      case (x: CssScalar[_], y: CssScalar[_])     => x.unit == y.unit && x.unitless == y.unitless
+      case (x: CssExpr.Call, y: CssExpr.Call)     => x.f == y.f && x.args === y.args
+      case (x: CssExpr.Op, y: CssExpr.Op)         => x.l === y.l && x.op == y.op && x.r === y.r
+      case (x: CssExpr.Unsafe, y: CssExpr.Unsafe) => x.exprString == y.exprString
+      case _                                      => false
+    }
 
   private def bracket(expr: CssExpr): String = expr match {
     case x: CssScalar[_] => print(x)
