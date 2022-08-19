@@ -47,7 +47,7 @@ trait CssKeyframes {
     */
   def keyframes(blocks: KeyframeBlock*): CssKeyword =
     GoodMotion.keyframes(blocks.map {
-      case (selector, css) => scope(selector.selector)(css).print
+      case (selector, body) => css(selector.selector)(body).print
     }: _*)
 
   @inline implicit def percentKeyframeSelector(p: CssScalar[Percent]): KeyframeSelector =

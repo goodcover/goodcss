@@ -3,8 +3,8 @@ package web.css
 import cats.data.NonEmptySeq
 
 trait CssFacade extends CssKeyframes {
-  def css(css: Css*): Css               = CssScope(None, css)
-  def css(sel: CssSelector)(body: Css*) = CssScope(Some(sel), body)
+  def css(css: Css*): Css                    = CssScope(None, css)
+  def css(sel: CssSelector)(body: Css*): Css = CssScope(Some(sel), body)
 
   def cn(body: Css*): ClassName                   = CssScope(None, body).cn
   def cn(sel: CssSelector)(body: Css*): ClassName = CssScope(Some(sel), body).cn
