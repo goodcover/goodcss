@@ -3,7 +3,10 @@ package web.css
 import cats.{Eq, Monoid}
 import scala.scalajs.js
 
-sealed trait Css
+sealed trait Css {
+  def when(test: Boolean): Css = if (test) this else Css.empty
+  @inline def unless(test: Boolean): Css = when(!test)
+}
 
 object Css {
 
@@ -43,6 +46,9 @@ object Css {
 final case class ClassName private[css] (name: String) {
   def unwrap: String = name
 
+  def when(test: Boolean): ClassName = if (test) this else ClassName.empty
+  @inline def unless(test: Boolean): ClassName = when(!test)
+
   override def toString(): String = name
 }
 
@@ -59,10 +65,6 @@ final case class CssScope private[css] (selector: Option[CssSelector], body: Seq
 
 final case class CssRule private[css] (name: String, rhs: CssRhs[CssValue], isImportant: Boolean = false) extends Css {
   def important: CssRule = copy(isImportant = true)
-
-  def when(test: Boolean): CssRule = copy(rhs = if (test) rhs else CssRhs.empty)
-
-  @inline def unless(test: Boolean): CssRule = when(!test)
 }
 
 final case class CssProp(propName: String)
