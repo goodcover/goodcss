@@ -17,9 +17,8 @@ trait CssFacade extends CssKeyframes {
   def exprVar(name: String): CssExprVar   = CssExprVar(name)
   def valueVar(name: String): CssValueVar = CssValueVar(name)
 
-  def spaced(xs: CssValue*): CssValue = CssSpaced(xs)
-
-  def sep(sep: String)(xs: CssValue*): CssValue = CssSpaced(xs, sep)
+  def spaced(xs: CssValue*): CssValue             = CssDelimited(xs)
+  def delim(sep: String)(xs: CssValue*): CssValue = CssDelimited(xs, sep)
 
   @inline def call(fn: String, exprs: CssExpr*): CssExpr = CssExpr.Call(fn, exprs)
 

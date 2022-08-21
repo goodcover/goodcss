@@ -60,7 +60,7 @@ object CssValue {
   implicit val printer: CssPrinter[CssValue] = _ match {
     case CssKeyword(k)               => k
     case CssQuoted(s)                => s"'$s'"
-    case CssSpaced(xs, sep)          => xs.map(_.print).mkString(sep)
+    case CssDelimited(xs, sep)       => xs.map(_.print).mkString(sep)
     case CssBuiltin(name, args, sep) => args.mkString(s"$name(", sep, ")")
     case CssValueVar(name)           => s"var($name)"
     case CssHsl(h, s, l, a)          => s"hsl($h $s% $l% / $a)"
@@ -72,15 +72,15 @@ object CssValue {
 
   implicit val eq: Eq[CssValue] = (x, y) =>
     (x, y) match {
-      case (CssKeyword(x), CssKeyword(y))   => x == y
-      case (CssQuoted(x), CssQuoted(y))     => x == y
-      case (x: CssSpaced, y: CssSpaced)     => x.values === y.values && x.separator == y.separator
-      case (x: CssBuiltin, y: CssBuiltin)   => x.name == y.name && x.args == y.args && x.separator == y.separator
-      case (CssValueVar(x), CssValueVar(y)) => x == y
-      case (x: CssHsl, y: CssHsl)           => x == y
-      case (x: CssRgb, y: CssRgb)           => x == y
-      case (x: CssExpr, y: CssExpr)         => CssExpr.eq.eqv(x, y)
-      case _                                => false
+      case (CssKeyword(x), CssKeyword(y))     => x == y
+      case (CssQuoted(x), CssQuoted(y))       => x == y
+      case (x: CssDelimited, y: CssDelimited) => x.values === y.values && x.separator == y.separator
+      case (x: CssBuiltin, y: CssBuiltin)     => x.name == y.name && x.args == y.args && x.separator == y.separator
+      case (CssValueVar(x), CssValueVar(y))   => x == y
+      case (x: CssHsl, y: CssHsl)             => x == y
+      case (x: CssRgb, y: CssRgb)             => x == y
+      case (x: CssExpr, y: CssExpr)           => CssExpr.eq.eqv(x, y)
+      case _                                  => false
     }
 }
 
@@ -90,7 +90,13 @@ final case class CssKeyword(keyword: String) extends CssValue with CssSize
 
 final case class CssQuoted(text: String) extends CssValue
 
-final case class CssSpaced(values: Seq[CssValue], separator: String = " ") extends CssValue
+final case class CssDelimited(values: Seq[CssValue], separator: String = " ") extends CssValue {
+  def sep(separator: String): CssDelimited = copy(separator = separator)
+}
+
+object CssDelimited {
+  def apply(values: CssValue*): CssDelimited = new CssDelimited(values)
+}
 
 final case class CssBuiltin(name: String, args: Seq[String], separator: String = ", ") extends CssValue
 
