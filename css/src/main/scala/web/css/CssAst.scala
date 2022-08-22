@@ -4,7 +4,7 @@ import cats.{Eq, Monoid}
 import scala.scalajs.js
 
 sealed trait Css {
-  def when(test: Boolean): Css = if (test) this else Css.empty
+  def when(test: Boolean): Css           = if (test) this else Css.empty
   @inline def unless(test: Boolean): Css = when(!test)
 }
 
@@ -46,7 +46,7 @@ object Css {
 final case class ClassName private[css] (name: String) {
   def unwrap: String = name
 
-  def when(test: Boolean): ClassName = if (test) this else ClassName.empty
+  def when(test: Boolean): ClassName           = if (test) this else ClassName.empty
   @inline def unless(test: Boolean): ClassName = when(!test)
 
   override def toString(): String = name
