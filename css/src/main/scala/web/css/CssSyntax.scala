@@ -9,12 +9,7 @@ private[css] object CssSyntax {
   final class CssRuleValueSyntax private[css] (val name: String) extends AnyVal {
     def :-(rhs: CssRhs[CssValue]): CssRule = CssRule(name, rhs)
 
-    def :-(a: CssValue, b: CssValue): CssRule                           = CssRule(name, CssDelimited(a, b))
-    def :-(a: CssValue, b: CssValue, c: CssValue): CssRule              = CssRule(name, CssDelimited(a, b, c))
-    def :-(a: CssValue, b: CssValue, c: CssValue, d: CssValue): CssRule = CssRule(name, CssDelimited(a, b, c, d))
-
-    def :-(a: CssValue, b: CssValue, c: CssValue, d: CssValue, e: CssValue): CssRule =
-      CssRule(name, CssDelimited(a, b, c, d, e))
+    def :-(x0: CssValue, x1: CssValue, xs: CssValue*): CssRule = CssRule(name, CssDelimited(x0 +: x1 +: xs))
 
     def ?-[A](rhs: Option[A])(implicit ev: A => CssRhs[CssValue]): CssRule =
       CssRule(name, rhs.fold(CssRhs.empty)(ev))
