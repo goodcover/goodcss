@@ -21,9 +21,9 @@ object Css {
     case CssScope(sel, body)           =>
       val wrapped = body.map(_.print).mkString("\n")
       sel match {
-        case None                    => wrapped
-        case Some(MediaQuery("all")) => wrapped
-        case Some(sel)               => s"${sel.selector} { $wrapped }"
+        case Seq()                  => wrapped
+        case Seq(MediaQuery("all")) => wrapped
+        case selectors              => s"${printSelectors(selectors)} { $wrapped }"
       }
     case CssRule(name, rhs, important) =>
       val bang = if (important) " !important" else ""
@@ -43,6 +43,8 @@ object Css {
   implicit def fromUndefOr(o: js.UndefOr[Css]): Css = o.getOrElse(Empty)
 
   implicit val monoid: Monoid[Css] = Monoid.instance(empty, css(_, _))
+
+  private def printSelectors(selectors: Seq[CssSelectorLike]): String = selectors.map(_.selector).mkString(", ")
 }
 
 final case class ClassName private[css] (name: String) {
@@ -75,7 +77,7 @@ object ClassName {
     Monoid.instance(empty, (x, y) => ClassName(s"${x.unwrap} ".stripLeading + y.unwrap))
 }
 
-final case class CssScope private[css] (selector: Option[CssSelector], body: Seq[Css]) extends Css
+final case class CssScope private[css] (selector: Seq[CssSelectorLike], body: Seq[Css]) extends Css
 
 final case class CssRule private[css] (name: String, rhs: CssRhs[CssValue], isImportant: Boolean = false) extends Css {
   def important: CssRule = copy(isImportant = true)

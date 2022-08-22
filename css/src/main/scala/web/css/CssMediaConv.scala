@@ -13,7 +13,7 @@ trait CssMediaConvLowPriorityImplicits3 {
   sealed class CssMediaConvCss extends CssMediaConv[Css, MediaQuery] {
     type T = Css
 
-    def apply(xs: NonEmptySeq[(MediaQuery, Css)]): Css = CssScope(None, xs.toSeq.map { case (q, x) => css(q)(x) })
+    def apply(xs: NonEmptySeq[(MediaQuery, Css)]): Css = CssScope(Nil, xs.toSeq.map { case (q, x) => css(q)(x) })
   }
 
   implicit def cssMediaConvCss: CssMediaConvCss = new CssMediaConvCss

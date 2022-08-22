@@ -3,14 +3,18 @@ package web.css
 import cats.data.NonEmptySeq
 
 trait CssFacade extends CssKeyframes {
-  def css(css: Css*): Css                    = CssScope(None, css)
-  def css(sel: CssSelector)(body: Css*): Css = CssScope(Some(sel), body)
+  val & : CssSelector = CssSelector("&")
 
-  def cn(body: Css*): ClassName                   = CssScope(None, body).cn
-  def cn(sel: CssSelector)(body: Css*): ClassName = CssScope(Some(sel), body).cn
+  def css(css: Css*): Css                     = CssScope(Seq.empty, css)
+  def css(query: MediaQuery)(body: Css*): Css = CssScope(Seq(query), body)
+  def css(sel: CssSelector*)(body: Css*): Css = CssScope(sel, body)
 
-  def clobber(body: Css*): Css                         = CssScope(Some("&&&&"), body)
-  def clobber(selector: String)(body: Css*): Css = CssScope(Some(selector * 4), body)
+  def cn(body: Css*): ClassName                    = CssScope(Seq.empty, body).cn
+  def cn(query: MediaQuery)(body: Css*): ClassName = CssScope(Seq(query), body).cn
+  def cn(sel: CssSelector*)(body: Css*): ClassName = CssScope(sel, body).cn
+
+  def clobber(body: Css*): Css                   = CssScope(Seq("&&&&": CssSelector), body)
+  def clobber(selector: String)(body: Css*): Css = CssScope(Seq(selector * 4: CssSelector), body)
 
   def named(name: String): ClassName = ClassName(s"gcn-$name")
 

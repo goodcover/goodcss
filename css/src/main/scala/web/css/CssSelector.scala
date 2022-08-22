@@ -2,23 +2,64 @@ package web.css
 
 import cats.Eq
 
+sealed trait CssSelectorLike {
+  def selector: String
+}
+
 /**
   * A CSS selector-like.
   * - selector: `.a, .b .c`
   * - media query: `only screen and (min-width: 600px)`
   */
-sealed trait CssSelector {
-  def selector: String
+final case class CssSelector(selector: String) extends CssSelectorLike {
+  def apply(sel: CssSelector): CssSelector = sel"$this$sel"
 
-  override def toString: String = s"CssSelector($selector)"
+  // Pseudo classes
+  def active: CssSelector = sel"$this:active"
+  def anyLink: CssSelector = sel"$this:any-link"
+  def blank: CssSelector = sel"$this:blank"
+  def checked: CssSelector = sel"$this:checked"
+  def default: CssSelector = sel"$this:default"
+  def disabled: CssSelector = sel"$this:disabled"
+  def empty: CssSelector = sel"$this:empty"
+  def enabled: CssSelector = sel"$this:enabled"
+  def firstChild: CssSelector = sel"$this.first-child"
+  def firstOfType: CssSelector = sel"$this:first-of-type"
+  def focus: CssSelector = sel"$this:focus"
+  def focusVisible: CssSelector = sel"$this:focus-visible"
+  def focusWithin: CssSelector = sel"$this:focus-within"
+  def hover: CssSelector = sel"$this:hover"
+  def invalid: CssSelector = sel"$this:invalid"
+  def lastChild: CssSelector = sel"$this:last-child"
+  def lastOfType: CssSelector = sel"$this:last-of-type"
+  def link: CssSelector = sel"$this:link"
+  def localLink: CssSelector = sel"$this:local-link"
+  def not(sel: CssSelector): CssSelector   = sel"$this:not($sel)"
+  def not(sel: CssSelector => CssSelector): CssSelector = not(sel(CssSelector.empty))
+  def onlyChild: CssSelector = sel"$this:only-child"
+  def onlyOfType: CssSelector = sel"$this:only-of-type"
+  def optional: CssSelector = sel"$this:optional"
+  def required: CssSelector = sel"$this:required"
+  def root: CssSelector = sel"$this.root"
+  def target: CssSelector = sel"$this:target"
+  def valid: CssSelector = sel"$this:valid"
+  def visited: CssSelector = sel"$this:visited"
+
+  // Pseudo elements
+  def after: CssSelector = sel"$this::before"
+  def before: CssSelector = sel"$this::before"
+  def firstLetter: CssSelector = sel"$this::first-letter"
+  def firstLine: CssSelector = sel"$this::first-line"
+  def placeholder: CssSelector = sel"$this::placeholder"
+  def selection: CssSelector = sel"$this::selection"
 }
 
 object CssSelector {
-  private[css] def apply(sel: String): CssSelector = new CssSelector { override val selector = sel }
+  val empty: CssSelector = CssSelector("")
 
-  private[css] def unapply(sel: CssSelector): Option[String] = Some(sel.selector)
+  implicit def fromClassName(name: ClassName): CssSelector = apply(s".$name")
 
-  implicit def fromString(s: String): CssSelector = apply(s)
+  implicit def fromString(s: String): CssSelector = CssSelector(s)
 
   implicit val eq: Eq[CssSelector] = _.selector == _.selector
 }
@@ -26,13 +67,13 @@ object CssSelector {
 /**
   * A CSS media query 'selector'.
   */
-sealed trait MediaQuery extends CssSelector {
+sealed trait MediaQuery extends CssSelectorLike {
 
   /** Media query string without `@media` prefix */
   def query: String
 
   /** Media query string with `@media` prefix */
-  override lazy val selector = "@media " + query
+  override def selector = "@media " + query
 
   def or(that: MediaQuery): MediaQuery =
     MediaQuery(s"(${this.query}) or (${that.query})")
