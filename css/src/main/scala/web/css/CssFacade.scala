@@ -10,7 +10,7 @@ trait CssFacade extends CssKeyframes {
   def cn(sel: CssSelector)(body: Css*): ClassName = CssScope(Some(sel), body).cn
 
   def clobber(body: Css*): Css                         = CssScope(Some("&&&&"), body)
-  def clobber(selector: String = "&")(body: Css*): Css = CssScope(Some(selector * 4), body)
+  def clobber(selector: String)(body: Css*): Css = CssScope(Some(selector * 4), body)
 
   def named(name: String): ClassName = ClassName(s"gcn-$name")
 
