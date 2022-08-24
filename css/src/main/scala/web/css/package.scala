@@ -14,4 +14,7 @@ package object css extends CssFacade with CssImplicits with CssKeywords with Css
   type BoundedInt     = Int Refined numeric.Interval.Closed[0, 255]
 
   @inline implicit def toPrinterOps[A: CssPrinter](target: A): CssPrinter.Ops[A] = new CssPrinter.Ops[A](target)
+
+  // Why does CssSelector.fromClassName not get selected?
+  @inline implicit def classNameToSelector(name: ClassName): CssSelector = CssSelector.fromClassName(name)
 }

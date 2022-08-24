@@ -11,46 +11,62 @@ sealed trait CssSelectorLike {
   * - selector: `.a, .b .c`
   * - media query: `only screen and (min-width: 600px)`
   */
-sealed case class CssSelector(selector: String) extends CssSelectorLike {
+final case class CssSelector(selector: String) extends CssSelectorLike {
+  import CssSelector.empty
 
-  def apply(sel: CssSelector): CssSelector = sel"$this$sel"
+  private type Endo = CssSelector => CssSelector
+
+  def apply(sel: CssSelector): CssSelector  = sel"$this$sel"
+  @inline def apply(sel: Endo): CssSelector = apply(sel(empty))
+
+  def >>(sel: CssSelector): CssSelector  = sel"$this $sel"
+  @inline def >>(sel: Endo): CssSelector = this >> sel(empty)
 
   def >(sel: CssSelector): CssSelector  = sel"$this > $sel"
-  def >>(sel: CssSelector): CssSelector = sel"$this $sel"
+  @inline def >(sel: Endo): CssSelector = this > sel(empty)
+
   def ~(sel: CssSelector): CssSelector  = sel"$this ~ $sel"
+  @inline def ~(sel: Endo): CssSelector = this ~ sel(empty)
+
   def +(sel: CssSelector): CssSelector  = sel"$this + $sel"
-  def id(id: String): CssSelector       = sel"$this#$id"
-  def cn(name: String): CssSelector     = sel"$this.$name"
+  @inline def +(sel: Endo): CssSelector = this + sel(empty)
+
+  def id(id: String): CssSelector = CssSelector(s"$selector#$id")
+
+  def attr(expr: String): CssSelector = CssSelector(s"$selector[$expr]")
 
   // Pseudo classes
-  def active: CssSelector                = sel"$this:active"
-  def anyLink: CssSelector               = sel"$this:any-link"
-  def blank: CssSelector                 = sel"$this:blank"
-  def checked: CssSelector               = sel"$this:checked"
-  def default: CssSelector               = sel"$this:default"
-  def disabled: CssSelector              = sel"$this:disabled"
-  def empty: CssSelector                 = sel"$this:empty"
-  def enabled: CssSelector               = sel"$this:enabled"
-  def firstChild: CssSelector            = sel"$this.first-child"
-  def firstOfType: CssSelector           = sel"$this:first-of-type"
-  def focus: CssSelector                 = sel"$this:focus"
-  def focusVisible: CssSelector          = sel"$this:focus-visible"
-  def focusWithin: CssSelector           = sel"$this:focus-within"
-  def hover: CssSelector                 = sel"$this:hover"
-  def invalid: CssSelector               = sel"$this:invalid"
-  def lastChild: CssSelector             = sel"$this:last-child"
-  def lastOfType: CssSelector            = sel"$this:last-of-type"
-  def link: CssSelector                  = sel"$this:link"
-  def localLink: CssSelector             = sel"$this:local-link"
-  def not(sel: CssSelector): CssSelector = sel"$this:not($sel)"
-  def onlyChild: CssSelector             = sel"$this:only-child"
-  def onlyOfType: CssSelector            = sel"$this:only-of-type"
-  def optional: CssSelector              = sel"$this:optional"
-  def required: CssSelector              = sel"$this:required"
-  def root: CssSelector                  = sel"$this.root"
-  def target: CssSelector                = sel"$this:target"
-  def valid: CssSelector                 = sel"$this:valid"
-  def visited: CssSelector               = sel"$this:visited"
+  def active: CssSelector       = sel"$this:active"
+  def anyLink: CssSelector      = sel"$this:any-link"
+  def blank: CssSelector        = sel"$this:blank"
+  def checked: CssSelector      = sel"$this:checked"
+  def default: CssSelector      = sel"$this:default"
+  def disabled: CssSelector     = sel"$this:disabled"
+  def empty: CssSelector        = sel"$this:empty"
+  def enabled: CssSelector      = sel"$this:enabled"
+  def firstChild: CssSelector   = sel"$this.first-child"
+  def firstOfType: CssSelector  = sel"$this:first-of-type"
+  def focus: CssSelector        = sel"$this:focus"
+  def focusVisible: CssSelector = sel"$this:focus-visible"
+  def focusWithin: CssSelector  = sel"$this:focus-within"
+  def hover: CssSelector        = sel"$this:hover"
+  def invalid: CssSelector      = sel"$this:invalid"
+  def lastChild: CssSelector    = sel"$this:last-child"
+  def lastOfType: CssSelector   = sel"$this:last-of-type"
+  def link: CssSelector         = sel"$this:link"
+  def localLink: CssSelector    = sel"$this:local-link"
+
+  def not(sel: CssSelector): CssSelector  = sel"$this:not($sel)"
+  @inline def not(sel: Endo): CssSelector = not(sel(empty))
+
+  def onlyChild: CssSelector  = sel"$this:only-child"
+  def onlyOfType: CssSelector = sel"$this:only-of-type"
+  def optional: CssSelector   = sel"$this:optional"
+  def required: CssSelector   = sel"$this:required"
+  def root: CssSelector       = sel"$this.root"
+  def target: CssSelector     = sel"$this:target"
+  def valid: CssSelector      = sel"$this:valid"
+  def visited: CssSelector    = sel"$this:visited"
 
   // Pseudo elements
   def after: CssSelector       = sel"$this::before"
@@ -64,9 +80,7 @@ sealed case class CssSelector(selector: String) extends CssSelectorLike {
 object CssSelector {
   val empty: CssSelector = CssSelector("")
 
-  implicit def fromClassName(name: ClassName): CssSelector = apply(s".$name")
-
-  implicit def fromString(s: String): CssSelector = CssSelector(s)
+  implicit def fromClassName(name: ClassName): CssSelector = apply(name.name.split(" +").mkString(".", ".", ""))
 
   implicit val eq: Eq[CssSelector] = _.selector == _.selector
 }

@@ -11,14 +11,25 @@ trait CssFacade extends CssKeyframes {
   def css(query: MediaQuery)(body: Css*): Css = CssScope(Seq(query), body)
   def css(sel: CssSelector*)(body: Css*): Css = CssScope(sel, body)
 
-  def cn(body: Css*): ClassName                    = CssScope(Seq.empty, body).cn
+  @deprecated("Use sel\"\" interpolator or CssSelector methods", "v1.8.7")
+  def css(sel: String)(body: Css*): Css = CssScope(Seq(CssSelector(sel)), body)
+
+  @deprecated("Use css(...).cn instead", "v1.8.7")
+  def cn(body: Css*): ClassName = CssScope(Seq.empty, body).cn
+
+  @deprecated("Use css(..)(...).cn instead", "v1.8.7")
   def cn(query: MediaQuery)(body: Css*): ClassName = CssScope(Seq(query), body).cn
+
+  @deprecated("Use css(...)(...).cn instead", "v1.8.7")
   def cn(sel: CssSelector*)(body: Css*): ClassName = CssScope(sel, body).cn
 
-  def clobber(body: Css*): Css                   = CssScope(Seq("&&&&": CssSelector), body)
-  def clobber(selector: String)(body: Css*): Css = CssScope(Seq(selector * 4: CssSelector), body)
+  @deprecated("Use css(..)(...).cn instead", "v1.8.7")
+  def cn(sel: String)(body: Css*): ClassName = CssScope(Seq(CssSelector(sel)), body).cn
 
-  def named(name: String): ClassName = ClassName(s"gcn-$name")
+  def clobber(body: Css*): Css                   = CssScope(Seq(CssSelector("&&&&")), body)
+  def clobber(selector: String)(body: Css*): Css = CssScope(Seq(CssSelector(selector * 4)), body)
+
+  def gcn(name: String): ClassName = ClassName(s"gcn-$name")
 
   def exprVar(name: String): CssExprVar   = CssExprVar(name)
   def valueVar(name: String): CssValueVar = CssValueVar(name)
