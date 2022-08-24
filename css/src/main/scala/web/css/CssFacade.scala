@@ -5,6 +5,8 @@ import cats.data.NonEmptySeq
 trait CssFacade extends CssKeyframes {
   val & : CssSelector = CssSelector("&")
 
+  val sel: CssSelector = CssSelector.empty
+
   def css(css: Css*): Css                     = CssScope(Seq.empty, css)
   def css(query: MediaQuery)(body: Css*): Css = CssScope(Seq(query), body)
   def css(sel: CssSelector*)(body: Css*): Css = CssScope(sel, body)
@@ -36,8 +38,8 @@ trait CssFacade extends CssKeyframes {
 
   def url(s: String): CssValue = CssBuiltin("url", Seq(s))
 
-  def hsl(h: Int, s: BoundedPercent, l: BoundedPercent): CssHsl                  = CssHsl(h, s, l)
-  def hsl(h: Int, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat): CssHsl = CssHsl(h, s, l, a)
+  def hsl(h: Hue, s: BoundedPercent, l: BoundedPercent): CssHsl                  = CssHsl(h, s, l)
+  def hsl(h: Hue, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat): CssHsl = CssHsl(h, s, l, a)
 
   def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt): CssRgb                  = CssRgb(r, g, b)
   def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt, a: BoundedFloat): CssRgb = CssRgb(r, g, b, a)

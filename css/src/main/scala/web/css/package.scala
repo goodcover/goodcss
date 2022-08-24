@@ -7,7 +7,9 @@ package object css extends CssFacade with CssImplicits with CssKeywords with Css
 
   type CssDim = CssRhs[CssExpr]
 
-  type BoundedPercent = Int Refined numeric.Interval.Closed[0, 100]
+  type Hue = Double
+
+  type BoundedPercent = Double Refined numeric.Interval.Closed[0.0, 100.0]
   type BoundedFloat   = Double Refined numeric.Interval.Closed[0.0, 1.0]
   type BoundedInt     = Int Refined numeric.Interval.Closed[0, 255]
 

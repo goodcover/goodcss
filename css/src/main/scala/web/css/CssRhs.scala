@@ -106,15 +106,15 @@ final case class CssValueVar(varName: String) extends CssValue {
 
 sealed trait CssColor extends CssValue
 
-final case class CssHsl(h: Int, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat = 1.0) extends CssColor
+final case class CssHsl(h: Hue, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat = 1.0) extends CssColor
 
 object CssHsl {
-  val black       = CssHsl(0, 0, 0)
-  val white       = CssHsl(0, 0, 100)
-  val red         = CssHsl(0, 100, 25)
-  val green       = CssHsl(120, 100, 25)
-  val blue        = CssHsl(240, 100, 25)
-  val transparent = CssHsl(0, 0, 0, 0.0)
+  val black       = CssHsl(0, 0.0, 0.0)
+  val white       = CssHsl(0, 0.0, 100.0)
+  val red         = CssHsl(0, 100.0, 25.0)
+  val green       = CssHsl(120, 100.0, 25.0)
+  val blue        = CssHsl(240, 100.0, 25.0)
+  val transparent = CssHsl(0, 0.0, 0.0, 0.0)
 }
 
 final case class CssRgb private (r: Double, g: Double, b: Double, a: Double) extends CssColor {
@@ -139,7 +139,7 @@ object CssRgb {
   def opacity(a: BoundedFloat): CssRgb = fromFloats(1d, 1d, 1d, a)
 
   // Algorithm from https://www.w3.org/TR/css-color-3/#hsl-color
-  def fromHsl(h: Int, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat = 1.0): CssRgb = {
+  def fromHsl(h: Hue, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat = 1.0): CssRgb = {
     val hmod = h % 360
 
     val hue = if (hmod < 0) hmod + 360 else hmod

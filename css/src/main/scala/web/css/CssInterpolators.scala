@@ -8,4 +8,6 @@ final class CssInterpolators(val sc: StringContext) extends AnyVal {
   def prop(ss: String*): CssProp = CssProp(sc.s(ss: _*))
 
   def sel(ss: CssSelector*): CssSelector = CssSelector(sc.s(ss.map(_.selector): _*))
+
+  def cn(ss: String*): ClassName = ClassName(sc.s(ss: _*))
 }
