@@ -1,6 +1,5 @@
 package web.css
 
-import slinky.web.{html => <}
 import eu.timepit.refined.api.{RefType, Refined, Validate}
 import eu.timepit.refined.macros.RefineMacro
 
@@ -24,9 +23,6 @@ trait CssImplicits {
   implicit def longScalarOps(n: Long)     = new CssNumberScalarOps(n.toDouble)
 
   implicit def cssInterpolators(sc: StringContext) = new CssInterpolators(sc)
-
-  implicit def richClassName(attr: <.className.type) = new RichClassName(attr)
-  implicit def richStyle(attr: <.style.type)         = new RichStyle(attr)
 
   // Copied here from eu.timepit.refined.auto.autoRefineV so hsl(x, y, z) just works.
   implicit def autoRefineV[T, P](t: T)(implicit rt: RefType[Refined], v: Validate[T, P]): Refined[T, P] =
