@@ -50,8 +50,12 @@ object Css {
 final case class ClassName private[css] (name: String) {
   def unwrap: String = name
 
+  def map(f: String => String): ClassName = name.split(" +").map(f).mkString(" ")
+
   def when(test: Boolean): ClassName           = if (test) this else ClassName.empty
   @inline def unless(test: Boolean): ClassName = when(!test)
+
+  def toSelector: CssSelector = CssSelector(name.name.split(" +").mkString(".", ".", ""))
 
   override def toString(): String = name
 }

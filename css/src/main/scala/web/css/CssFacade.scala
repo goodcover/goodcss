@@ -3,35 +3,49 @@ package web.css
 import cats.data.NonEmptySeq
 
 trait CssFacade extends CssKeyframes {
+
+  /** Stylis parent selector */
   val & : CssSelector = CssSelector("&")
 
+  /** Empty CSS selector
+    *
+    * Use when you need an operator or other selector without rhs
+    *
+    * Example:
+    *     sel > cn"ant-foo",
+    *     sel.lastChild
+    *
+    * will produce:
+    *     > .ant-foo,
+    *     :lastChild
+    */
   val sel: CssSelector = CssSelector.empty
 
-  def css(css: Css*): Css                     = CssScope(Seq.empty, css)
+  /** Create top-level CSS scope
+    *
+    * (Top-level wrt to whatever the CSS ends up bound to)
+    */
+  def css(css: Css*): Css = CssScope(Seq.empty, css)
+
+  /** Create CSS scoped by query */
   def css(query: MediaQuery)(body: Css*): Css = CssScope(Seq(query), body)
+
+  /** Create CSS scoped by selectors */
   def css(sel: CssSelector*)(body: Css*): Css = CssScope(sel, body)
 
-  @deprecated("Use sel\"\" interpolator or CssSelector methods", "v1.8.7")
-  def css(sel: String)(body: Css*): Css = CssScope(Seq(CssSelector(sel)), body)
+  /** Create an overriding CSS scope */
+  def clobber(body: Css*): Css = CssScope(Seq(CssSelector("&&&&")), body)
 
-  @deprecated("Use css(...).cn instead", "v1.8.7")
-  def cn(body: Css*): ClassName = CssScope(Seq.empty, body).cn
-
-  @deprecated("Use css(..)(...).cn instead", "v1.8.7")
-  def cn(query: MediaQuery)(body: Css*): ClassName = CssScope(Seq(query), body).cn
-
-  @deprecated("Use css(...)(...).cn instead", "v1.8.7")
-  def cn(sel: CssSelector*)(body: Css*): ClassName = CssScope(sel, body).cn
-
-  @deprecated("Use css(..)(...).cn instead", "v1.8.7")
-  def cn(sel: String)(body: Css*): ClassName = CssScope(Seq(CssSelector(sel)), body).cn
-
-  def clobber(body: Css*): Css                   = CssScope(Seq(CssSelector("&&&&")), body)
+  /** Create an overriding CSS scope by repeating the supplied selector */
   def clobber(selector: String)(body: Css*): Css = CssScope(Seq(CssSelector(selector * 4)), body)
 
-  def gcn(name: String): ClassName = ClassName(s"gcn-$name")
+  /** Create a class name with "gcn-" prefix */
+  def gcn(name: String): ClassName = ClassName(name).map("gcn-" + _)
 
-  def exprVar(name: String): CssExprVar   = CssExprVar(name)
+  /** Create a CSS variable for expressions */
+  def exprVar(name: String): CssExprVar = CssExprVar(name)
+
+  /** Create a CSS variable for any CSS value */
   def valueVar(name: String): CssValueVar = CssValueVar(name)
 
   def spaced(xs: CssValue*): CssValue             = CssDelimited(xs)
@@ -71,4 +85,20 @@ trait CssFacade extends CssKeyframes {
 
   def stackingContext(zIndex: Int = 0, position: CssKeyword = relative): Css =
     css(prop.zIndex :- zIndex.n, prop.position :- position)
+
+  @deprecated("Use sel\"\" interpolator or CssSelector methods", "v1.8.7")
+  def css(sel: String)(body: Css*): Css = CssScope(Seq(CssSelector(sel)), body)
+
+  @deprecated("Use css(...).cn instead", "v1.8.7")
+  def cn(body: Css*): ClassName = CssScope(Seq.empty, body).cn
+
+  @deprecated("Use css(..)(...).cn instead", "v1.8.7")
+  def cn(query: MediaQuery)(body: Css*): ClassName = CssScope(Seq(query), body).cn
+
+  @deprecated("Use css(...)(...).cn instead", "v1.8.7")
+  def cn(sel: CssSelector*)(body: Css*): ClassName = CssScope(sel, body).cn
+
+  @deprecated("Use css(..)(...).cn instead", "v1.8.7")
+  def cn(sel: String)(body: Css*): ClassName = CssScope(Seq(CssSelector(sel)), body).cn
+
 }

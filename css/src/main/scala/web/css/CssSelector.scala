@@ -2,14 +2,35 @@ package web.css
 
 import cats.Eq
 
-sealed trait CssSelectorLike {
-  def selector: String
-}
-
 /**
   * A CSS selector-like.
   * - selector: `.a, .b .c`
   * - media query: `only screen and (min-width: 600px)`
+  */
+sealed trait CssSelectorLike {
+  def selector: String
+}
+
+/** A CSS selector
+  *
+  * NOTE: descendent selection is defined by the >> operator
+  *
+  * Example:
+  *     &(cn"abc") >> cn"foo" > sel"*"
+  *
+  * will produce:
+  *     &.abc .foo > *
+  *
+  * Import web.elem._ and slinky tags can be used to denote tag selectors, as can TagElemImpl. In both cases, class
+  * names attached to the tag will be used to form the resulting selector.
+  *
+  * Example:
+  *     import slinky.web.{html => <}
+  *
+  *     & > <.img.named(cn("foo"))
+  *
+  * will produce:
+  *     & > img.foo
   */
 final case class CssSelector(selector: String) extends CssSelectorLike {
   import CssSelector.empty
@@ -80,7 +101,7 @@ final case class CssSelector(selector: String) extends CssSelectorLike {
 object CssSelector {
   val empty: CssSelector = CssSelector("")
 
-  implicit def fromClassName(name: ClassName): CssSelector = apply(name.name.split(" +").mkString(".", ".", ""))
+  implicit def fromClassName(name: ClassName): CssSelector = name.toSelector
 
   implicit val eq: Eq[CssSelector] = _.selector == _.selector
 }
