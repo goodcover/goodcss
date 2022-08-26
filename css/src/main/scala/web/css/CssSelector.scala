@@ -1,6 +1,7 @@
 package web.css
 
 import cats.Eq
+import web.css.CssSelector.Endo
 
 /**
   * A CSS selector-like.
@@ -35,8 +36,6 @@ sealed trait CssSelectorLike {
 final case class CssSelector(selector: String) extends CssSelectorLike {
   import CssSelector.empty
 
-  private type Endo = CssSelector => CssSelector
-
   def apply(sel: CssSelector): CssSelector  = sel"$this$sel"
   @inline def apply(sel: Endo): CssSelector = apply(sel(empty))
 
@@ -52,9 +51,12 @@ final case class CssSelector(selector: String) extends CssSelectorLike {
   def +(sel: CssSelector): CssSelector  = sel"$this + $sel"
   @inline def +(sel: Endo): CssSelector = this + sel(empty)
 
+  def * : CssSelector = sel"$this *"
+
   def id(id: String): CssSelector = CssSelector(s"$selector#$id")
 
-  def attr(expr: String): CssSelector = CssSelector(s"$selector[$expr]")
+  def attr(expr: String): CssSelector                = CssSelector(s"$selector[$expr]")
+  def attr(name: String, value: String): CssSelector = attr(s"""$name="$value"""")
 
   // Pseudo classes
   def active: CssSelector       = sel"$this:active"
@@ -99,6 +101,9 @@ final case class CssSelector(selector: String) extends CssSelectorLike {
 }
 
 object CssSelector {
+
+  private[css] type Endo = CssSelector => CssSelector
+
   val empty: CssSelector = CssSelector("")
 
   implicit def fromClassName(name: ClassName): CssSelector = name.toSelector

@@ -33,6 +33,9 @@ trait CssFacade extends CssKeyframes {
   /** Create CSS scoped by selectors */
   def css(sel: CssSelector*)(body: Css*): Css = CssScope(sel, body)
 
+  /** Create CSS scoped by selectors (with auto-complete) */
+  def css(sel: CssSelector.Endo)(body: Css*): Css = css(sel(CssSelector.empty))(body: _*)
+
   /** Create an overriding CSS scope */
   def clobber(body: Css*): Css = CssScope(Seq(CssSelector("&&&&")), body)
 
@@ -72,8 +75,10 @@ trait CssFacade extends CssKeyframes {
   def blackToColor(rgb: CssRgb): CssValue = CssSvgColorFilter.blackToRgb(rgb)
   def blackToColor(hsl: CssHsl): CssValue = CssSvgColorFilter.blackToHsl(hsl)
 
-  def scale(x: Double): CssExpr            = call("scale", x.n)
-  def scale(x: Double, y: Double): CssExpr = call("scale", x.n, y.n)
+  def scale(x: CssExpr): CssExpr             = call("scale", x)
+  def scale(x: CssExpr, y: CssExpr): CssExpr = call("scale", x, y)
+  def scaleX(x: CssExpr): CssExpr            = call("scaleX", x)
+  def scaleY(y: CssExpr): CssExpr            = call("scaleY", y)
 
   def rotate(r: CssExpr): CssExpr = call("rotate", r)
 

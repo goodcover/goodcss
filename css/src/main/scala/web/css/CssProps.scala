@@ -111,6 +111,7 @@ trait CssProps {
   val textUnderlineOffset      = prop"text-underline-offset"
   val top                      = prop"top"
   val transform                = prop"transform"
+  val transformOrigin          = prop"transform-origin"
   val transition               = prop"transition"
   val transitionDuration       = prop"transition-duration"
   val transitionProperty       = CssMetaProp("transition-property")

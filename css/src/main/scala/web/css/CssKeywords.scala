@@ -68,7 +68,6 @@ trait CssKeywords {
   val static          = kw"static"
   val stretch         = kw"stretch"
   val textBottom      = kw"text-bottom"
-  val transformOrigin = kw"transform-origin"
   val transparent     = kw"transparent"
   val underline       = kw"underline"
   val unset           = kw"unset"
