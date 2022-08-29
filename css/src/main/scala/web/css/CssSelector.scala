@@ -74,6 +74,8 @@ final case class CssSelector(selector: String) extends CssSelectorLike {
   def attrContains(name: String, value: String, caseSensitive: Boolean = true): CssSelector =
     attr(name, value, caseSensitive, "*=")
 
+  def clobber: CssSelector = CssSelector(selector * 4)
+
   // Pseudo classes
   def active: CssSelector       = sel"$this:active"
   def anyLink: CssSelector      = sel"$this:any-link"

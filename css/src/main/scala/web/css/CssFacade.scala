@@ -21,6 +21,8 @@ trait CssFacade extends CssKeyframes {
     */
   val sel: CssSelector = CssSelector.empty
 
+  val clobber: CssSelector = CssSelector("&&&&")
+
   /** Create top-level CSS scope
     *
     * (Top-level wrt to whatever the CSS ends up bound to)
@@ -37,12 +39,6 @@ trait CssFacade extends CssKeyframes {
   /** Create CSS scoped by selectors (with auto-complete) */
   def css(selector: CssSelector.Endo, selectors: CssSelector.Endo*)(body: Css*): Css =
     CssScope(selector(sel) +: selectors.map(f => f(sel)), body)
-
-  /** Create an overriding CSS scope */
-  def clobber(body: Css*): Css = CssScope(Seq(CssSelector("&&&&")), body)
-
-  /** Create an overriding CSS scope by repeating the supplied selector */
-  def clobber(selector: String)(body: Css*): Css = CssScope(Seq(CssSelector(selector * 4)), body)
 
   /** Create a class name with "gcn-" prefix */
   def gcn(name: String): ClassName = ClassName(name).map("gcn-" + _)
