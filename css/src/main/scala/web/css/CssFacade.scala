@@ -31,10 +31,12 @@ trait CssFacade extends CssKeyframes {
   def css(query: MediaQuery)(body: Css*): Css = CssScope(Seq(query), body)
 
   /** Create CSS scoped by selectors */
-  def css(sel: CssSelector*)(body: Css*): Css = CssScope(sel, body)
+  def css(selector: CssSelector, selectors: CssSelector*)(body: Css*): Css =
+    CssScope(selector +: selectors, body)
 
   /** Create CSS scoped by selectors (with auto-complete) */
-  def css(sel: CssSelector.Endo)(body: Css*): Css = css(sel(CssSelector.empty))(body: _*)
+  def css(selector: CssSelector.Endo, selectors: CssSelector.Endo*)(body: Css*): Css =
+    CssScope(selector(sel) +: selectors.map(f => f(sel)), body)
 
   /** Create an overriding CSS scope */
   def clobber(body: Css*): Css = CssScope(Seq(CssSelector("&&&&")), body)

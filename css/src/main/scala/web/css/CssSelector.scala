@@ -34,29 +34,45 @@ sealed trait CssSelectorLike {
   *     & > img.foo
   */
 final case class CssSelector(selector: String) extends CssSelectorLike {
-  import CssSelector.empty
 
-  def apply(sel: CssSelector): CssSelector  = sel"$this$sel"
-  @inline def apply(sel: Endo): CssSelector = apply(sel(empty))
+  def apply(selector: CssSelector): CssSelector  = sel"$this$selector"
+  @inline def apply(selector: Endo): CssSelector = apply(selector(sel))
 
-  def >>(sel: CssSelector): CssSelector  = sel"$this $sel"
-  @inline def >>(sel: Endo): CssSelector = this >> sel(empty)
+  def >>(selector: CssSelector): CssSelector  = sel"$this $selector"
+  @inline def >>(selector: Endo): CssSelector = this >> selector(sel)
 
-  def >(sel: CssSelector): CssSelector  = sel"$this > $sel"
-  @inline def >(sel: Endo): CssSelector = this > sel(empty)
+  def >(selector: CssSelector): CssSelector  = sel"$this > $selector"
+  @inline def >(selector: Endo): CssSelector = this > selector(sel)
 
-  def ~(sel: CssSelector): CssSelector  = sel"$this ~ $sel"
-  @inline def ~(sel: Endo): CssSelector = this ~ sel(empty)
+  def ~(selector: CssSelector): CssSelector  = sel"$this ~ $selector"
+  @inline def ~(selector: Endo): CssSelector = this ~ selector(sel)
 
-  def +(sel: CssSelector): CssSelector  = sel"$this + $sel"
-  @inline def +(sel: Endo): CssSelector = this + sel(empty)
+  def +(selector: CssSelector): CssSelector  = sel"$this + $selector"
+  @inline def +(selector: Endo): CssSelector = this + selector(sel)
 
   def * : CssSelector = sel"$this *"
 
   def id(id: String): CssSelector = CssSelector(s"$selector#$id")
 
-  def attr(expr: String): CssSelector                = CssSelector(s"$selector[$expr]")
-  def attr(name: String, value: String): CssSelector = attr(s"""$name="$value"""")
+  def attr(expr: String): CssSelector = CssSelector(s"$selector[$expr]")
+
+  def attr(name: String, value: String, caseSensitive: Boolean = true, operator: String = "="): CssSelector =
+    attr(s"""$name$operator"$value${if (caseSensitive) "" else " i"}"""")
+
+  def attrList(name: String, value: String, caseSensitive: Boolean = true): CssSelector =
+    attr(name, value, caseSensitive, "~=")
+
+  def attrHyphen(name: String, value: String, caseSensitive: Boolean = true): CssSelector =
+    attr(name, value, caseSensitive, "|=")
+
+  def attrPrefix(name: String, value: String, caseSensitive: Boolean = true): CssSelector =
+    attr(name, value, caseSensitive, "^=")
+
+  def attrSuffix(name: String, value: String, caseSensitive: Boolean = true): CssSelector =
+    attr(name, value, caseSensitive, "$=")
+
+  def attrContains(name: String, value: String, caseSensitive: Boolean = true): CssSelector =
+    attr(name, value, caseSensitive, "*=")
 
   // Pseudo classes
   def active: CssSelector       = sel"$this:active"
@@ -67,7 +83,7 @@ final case class CssSelector(selector: String) extends CssSelectorLike {
   def disabled: CssSelector     = sel"$this:disabled"
   def empty: CssSelector        = sel"$this:empty"
   def enabled: CssSelector      = sel"$this:enabled"
-  def firstChild: CssSelector   = sel"$this.first-child"
+  def firstChild: CssSelector   = sel"$this:first-child"
   def firstOfType: CssSelector  = sel"$this:first-of-type"
   def focus: CssSelector        = sel"$this:focus"
   def focusVisible: CssSelector = sel"$this:focus-visible"
@@ -79,14 +95,14 @@ final case class CssSelector(selector: String) extends CssSelectorLike {
   def link: CssSelector         = sel"$this:link"
   def localLink: CssSelector    = sel"$this:local-link"
 
-  def not(sel: CssSelector): CssSelector  = sel"$this:not($sel)"
-  @inline def not(sel: Endo): CssSelector = not(sel(empty))
+  def not(selector: CssSelector): CssSelector  = sel"$this:not($selector)"
+  @inline def not(selector: Endo): CssSelector = not(selector(sel))
 
   def onlyChild: CssSelector  = sel"$this:only-child"
   def onlyOfType: CssSelector = sel"$this:only-of-type"
   def optional: CssSelector   = sel"$this:optional"
   def required: CssSelector   = sel"$this:required"
-  def root: CssSelector       = sel"$this.root"
+  def root: CssSelector       = sel"$this:root"
   def target: CssSelector     = sel"$this:target"
   def valid: CssSelector      = sel"$this:valid"
   def visited: CssSelector    = sel"$this:visited"
@@ -120,7 +136,7 @@ sealed trait MediaQuery extends CssSelectorLike {
   def query: String
 
   /** Media query string with `@media` prefix */
-  override def selector = "@media " + query
+  override def selector: String = "@media " + query
 
   def or(that: MediaQuery): MediaQuery =
     MediaQuery(s"(${this.query}) or (${that.query})")
