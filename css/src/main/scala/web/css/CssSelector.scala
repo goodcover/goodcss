@@ -33,24 +33,22 @@ sealed trait CssSelectorLike {
   *     & > img.foo
   */
 final case class CssSelector(selector: String) extends CssSelectorLike {
-  import CssSelector.empty
-
   private type Endo = CssSelector => CssSelector
 
   def apply(sel: CssSelector): CssSelector  = sel"$this$sel"
-  @inline def apply(sel: Endo): CssSelector = apply(sel(empty))
+  @inline def apply(sel: Endo): CssSelector = apply(sel(CssSelector.empty))
 
   def >>(sel: CssSelector): CssSelector  = sel"$this $sel"
-  @inline def >>(sel: Endo): CssSelector = this >> sel(empty)
+  @inline def >>(sel: Endo): CssSelector = this >> sel(CssSelector.empty)
 
   def >(sel: CssSelector): CssSelector  = sel"$this > $sel"
-  @inline def >(sel: Endo): CssSelector = this > sel(empty)
+  @inline def >(sel: Endo): CssSelector = this > sel(CssSelector.empty)
 
   def ~(sel: CssSelector): CssSelector  = sel"$this ~ $sel"
-  @inline def ~(sel: Endo): CssSelector = this ~ sel(empty)
+  @inline def ~(sel: Endo): CssSelector = this ~ sel(CssSelector.empty)
 
   def +(sel: CssSelector): CssSelector  = sel"$this + $sel"
-  @inline def +(sel: Endo): CssSelector = this + sel(empty)
+  @inline def +(sel: Endo): CssSelector = this + sel(CssSelector.empty)
 
   def id(id: String): CssSelector = CssSelector(s"$selector#$id")
 
@@ -78,7 +76,7 @@ final case class CssSelector(selector: String) extends CssSelectorLike {
   def localLink: CssSelector    = sel"$this:local-link"
 
   def not(sel: CssSelector): CssSelector  = sel"$this:not($sel)"
-  @inline def not(sel: Endo): CssSelector = not(sel(empty))
+  @inline def not(sel: Endo): CssSelector = not(sel(CssSelector.empty))
 
   def onlyChild: CssSelector  = sel"$this:only-child"
   def onlyOfType: CssSelector = sel"$this:only-of-type"
