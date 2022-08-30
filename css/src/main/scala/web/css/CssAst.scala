@@ -64,7 +64,7 @@ object ClassName {
   val empty = ClassName("")
 
   def fromMixed(xs: Seq[ClassName | Css]): ClassName = {
-    val (name, _) = xs.foldLeft((ClassName.empty, Css.empty)) { (x, y) =>
+    val (name, last) = xs.foldLeft((ClassName.empty, Css.empty)) { (x, y) =>
       val (name, css) = x
       (y: Any) match {
         case c: ClassName => (name |+| css.cn |+| c, Css.empty)
@@ -72,7 +72,7 @@ object ClassName {
         case _            => throw js.JavaScriptException("Inconceivable! Pattern match fall-through.")
       }
     }
-    name
+    name |+| last.cn
   }
 
   implicit val eq: Eq[ClassName] = Eq.fromUniversalEquals

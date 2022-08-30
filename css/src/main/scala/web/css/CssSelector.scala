@@ -110,7 +110,7 @@ final case class CssSelector(selector: String) extends CssSelectorLike {
   def visited: CssSelector    = sel"$this:visited"
 
   // Pseudo elements
-  def after: CssSelector       = sel"$this::before"
+  def after: CssSelector       = sel"$this::after"
   def before: CssSelector      = sel"$this::before"
   def firstLetter: CssSelector = sel"$this::first-letter"
   def firstLine: CssSelector   = sel"$this::first-line"
