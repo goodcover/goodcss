@@ -67,6 +67,7 @@ trait CssKeywords {
   val span         = kw"span"
   val start        = kw"start"
   val static       = kw"static"
+  val sticky       = kw"sticky"
   val stretch      = kw"stretch"
   val textBottom   = kw"text-bottom"
   val transparent  = kw"transparent"
