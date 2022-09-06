@@ -100,6 +100,7 @@ trait CssProps {
   val paddingLeft              = prop"padding-left"
   val paddingRight             = prop"padding-right"
   val paddingTop               = prop"padding-top"
+  val pointerEvents            = prop"pointer-events"
   val position                 = prop"position"
   val right                    = prop"right"
   val rowGap                   = prop"row-gap"
