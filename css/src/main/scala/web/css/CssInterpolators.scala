@@ -18,5 +18,5 @@ final class CssInterpolators(val sc: StringContext) extends AnyVal {
   def cn(ss: String*): ClassName = ClassName(sc.s(ss: _*))
 
   /** CSS class name with "gcn-" prefix */
-  def gcn(ss: String*): ClassName = gcn(sc.s(ss: _*))
+  def gcn(ss: String*): ClassName = web.css.gcn(sc.s(ss: _*))
 }
