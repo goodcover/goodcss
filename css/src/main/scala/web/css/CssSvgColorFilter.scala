@@ -1,8 +1,10 @@
 package web.css
 
 import org.scalajs.dom.document
+import org.scalajs.dom
 
 object CssSvgColorFilter {
+  dom.console.log(dom.svg);
   val svgns = "http://www.w3.org/2000/svg"
 
   def filterId(rgb: CssRgb) = {
@@ -13,11 +15,6 @@ object CssSvgColorFilter {
   def createColorFilter(rgb: CssRgb) = {
     import rgb._
     val fid    = filterId(rgb)
-    val fsvg   = document.createElementNS(svgns, "svg")
-    fsvg.setAttribute("width", "0")
-    fsvg.setAttribute("height", "0")
-    fsvg.setAttribute("margin", "0")
-    fsvg.setAttribute("padding", "0")
     val filter = document.createElementNS(svgns, "filter")
     filter.setAttribute("color-interpolation-filters", "sRGB")
     filter.setAttribute("id", fid)
@@ -30,9 +27,8 @@ object CssSvgColorFilter {
       0 0 1 0 $b
       0 0 0 $a 0
     """)
-    fsvg.appendChild(filter)
     filter.appendChild(matrix)
-    fsvg
+    filter
   }
 
   def filterContainer = {
@@ -40,7 +36,7 @@ object CssSvgColorFilter {
     val container = document.getElementById(id)
     if (container != null) container
     else {
-      val container = document.createElement("div")
+      val container = document.createElementNS(svgns, "svg")
       container.id = id
       container.setAttribute("style", "display: none")
       document.body.appendChild(container)
@@ -58,8 +54,8 @@ object CssSvgColorFilter {
     else {
       val id = filterId(rgb)
       if (document.getElementById(id) == null) {
-        val svg = createColorFilter(rgb)
-        filterContainer.appendChild(svg)
+        val filter = createColorFilter(rgb)
+        filterContainer.appendChild(filter)
       }
       url(s"#$id")
     }

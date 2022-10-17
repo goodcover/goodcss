@@ -18,6 +18,8 @@ private[css] object CssSyntax {
 
     def :-[A](rhs: js.UndefOr[A])(implicit ev: A => CssRhs[CssValue]): CssRule =
       CssRule(name, rhs.fold(CssRhs.empty)(ev))
+
+    def :-[A](rhs: Seq[CssValue]): CssRule = CssRule(name, CssDelimited(rhs))
   }
 
   final class CssRuleExprSyntax private[css] (val name: String) extends AnyVal {
