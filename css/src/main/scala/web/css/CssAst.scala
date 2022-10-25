@@ -42,7 +42,7 @@ object Css {
   implicit def fromOption(o: Option[Css]): Css      = o.getOrElse(Empty)
   implicit def fromUndefOr(o: js.UndefOr[Css]): Css = o.getOrElse(Empty)
 
-  implicit val eq: Eq[Css] = Eq.fromUniversalEquals
+  implicit val eq: Eq[Css]         = Eq.fromUniversalEquals
   implicit val monoid: Monoid[Css] = Monoid.instance(empty, css(_, _))
 
   private def printSelectors(selectors: Seq[CssSelectorLike]): String = selectors.map(_.selector).mkString(", ")
