@@ -1,10 +1,8 @@
 package web.css
 
 import org.scalajs.dom.document
-import org.scalajs.dom
 
 object CssSvgColorFilter {
-  dom.console.log(dom.svg);
   val svgns = "http://www.w3.org/2000/svg"
 
   def filterId(rgb: CssRgb) = {
