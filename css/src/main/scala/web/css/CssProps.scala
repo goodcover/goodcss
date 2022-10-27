@@ -117,6 +117,7 @@ trait CssProps {
   val transitionDuration       = prop"transition-duration"
   val transitionProperty       = CssMetaProp("transition-property")
   val transitionTimingFunction = prop"transition-timing-function"
+  val userSelect               = prop"user-select"
   val verticalAlign            = prop"vertical-align"
   val visibility               = prop"visibility"
   val whiteSpace               = prop"white-space"
