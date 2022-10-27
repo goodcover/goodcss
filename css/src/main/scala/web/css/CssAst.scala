@@ -78,8 +78,7 @@ object ClassName {
 
   implicit val eq: Eq[ClassName] = Eq.fromUniversalEquals
 
-  implicit val monoid: Monoid[ClassName] =
-    Monoid.instance(empty, (x, y) => ClassName(Seq(x, y).map(_.unwrap).filter(_.nonEmpty).mkString(" ")))
+  implicit val monoid: Monoid[ClassName] = Monoid.instance(empty, GoodMotion.cx(_, _))
 }
 
 final case class CssScope private[css] (selector: Seq[CssSelectorLike], body: Seq[Css]) extends Css
