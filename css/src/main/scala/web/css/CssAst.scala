@@ -42,6 +42,7 @@ object Css {
   implicit def fromOption(o: Option[Css]): Css      = o.getOrElse(Empty)
   implicit def fromUndefOr(o: js.UndefOr[Css]): Css = o.getOrElse(Empty)
 
+  implicit val eq: Eq[Css]         = Eq.fromUniversalEquals
   implicit val monoid: Monoid[Css] = Monoid.instance(empty, css(_, _))
 
   private def printSelectors(selectors: Seq[CssSelectorLike]): String = selectors.map(_.selector).mkString(", ")
@@ -77,8 +78,7 @@ object ClassName {
 
   implicit val eq: Eq[ClassName] = Eq.fromUniversalEquals
 
-  implicit val monoid: Monoid[ClassName] =
-    Monoid.instance(empty, (x, y) => ClassName(s"${x.unwrap} ".stripLeading + y.unwrap))
+  implicit val monoid: Monoid[ClassName] = Monoid.instance(empty, GoodMotion.cx(_, _))
 }
 
 final case class CssScope private[css] (selector: Seq[CssSelectorLike], body: Seq[Css]) extends Css
