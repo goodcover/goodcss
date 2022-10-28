@@ -1,11 +1,12 @@
 package web.css
 
 import scala.scalajs.js
+import cats.syntax.monoid._
 
 private[css] object CssSyntax {
 
   final class CssOps private[css] (val css: Css) extends AnyVal {
-    def cn: ClassName = GoodMotion.css(css.print)
+    def cn: ClassName = if (css.isEmpty) ClassName.empty else GoodMotion.css(css.print)
   }
 
   final class CssRuleValueSyntax private[css] (val name: String) extends AnyVal {
