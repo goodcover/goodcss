@@ -15,6 +15,8 @@ trait CssKeywords {
   val absolute     = kw"absolute"
   val appearance   = kw"appearance"
   val auto         = kw"auto"
+  val autoFill     = kw"auto-fill"
+  val autoFit      = kw"auto-fit"
   val baseline     = kw"baseline"
   val block        = kw"block"
   val both         = kw"both"

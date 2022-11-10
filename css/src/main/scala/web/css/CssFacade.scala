@@ -51,6 +51,7 @@ trait CssFacade extends CssKeyframes {
 
   def spaced(xs: CssValue*): CssValue             = CssDelimited(xs)
   def delim(sep: String)(xs: CssValue*): CssValue = CssDelimited(xs, sep)
+  def bracket(xs: CssValue*): CssValue            = CssDelimited(xs, "[", " ", "]")
 
   @inline def call(fn: String, exprs: CssExpr*): CssExpr = CssExpr.Call(fn, exprs)
 
