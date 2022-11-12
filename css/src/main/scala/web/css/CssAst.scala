@@ -19,7 +19,7 @@ object Css {
   implicit val printer: CssPrinter[Css] = _ match {
     case Empty                         => ""
     case CssScope(sel, body)           =>
-      val wrapped = body.map(_.print).mkString("\n")
+      val wrapped = body.filterNot(_.isEmpty).map(_.print).mkString("\n")
       sel match {
         case Seq()                  => wrapped
         case Seq(MediaQuery("all")) => wrapped
@@ -42,7 +42,14 @@ object Css {
   implicit def fromOption(o: Option[Css]): Css      = o.getOrElse(Empty)
   implicit def fromUndefOr(o: js.UndefOr[Css]): Css = o.getOrElse(Empty)
 
-  implicit val eq: Eq[Css]         = Eq.fromUniversalEquals
+  val emptyEq: Eq[Css]             = Eq.instance {
+    case (Empty, Empty)             => true
+    case (scope: CssScope, Empty)   => scope.isEmpty
+    case (Empty, scope: CssScope)   => scope.isEmpty
+    case (a: CssScope, b: CssScope) => a.isEmpty && b.isEmpty
+    case _                          => false
+  }
+  implicit val eq: Eq[Css]         = Eq.or(emptyEq, Eq.fromUniversalEquals)
   implicit val monoid: Monoid[Css] = Monoid.instance(empty, css(_, _))
 
   private def printSelectors(selectors: Seq[CssSelectorLike]): String = selectors.map(_.selector).mkString(", ")
@@ -81,7 +88,9 @@ object ClassName {
   implicit val monoid: Monoid[ClassName] = Monoid.instance(empty, GoodMotion.cx(_, _))
 }
 
-final case class CssScope private[css] (selector: Seq[CssSelectorLike], body: Seq[Css]) extends Css
+final case class CssScope private[css] (selector: Seq[CssSelectorLike], body: Seq[Css]) extends Css {
+  def isEmpty: Boolean = body.forall(_.isEmpty)
+}
 
 final case class CssRule private[css] (name: String, rhs: CssRhs[CssValue], isImportant: Boolean = false) extends Css {
   def important: CssRule = copy(isImportant = true)
