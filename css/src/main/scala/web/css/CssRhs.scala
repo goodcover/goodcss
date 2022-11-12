@@ -66,7 +66,6 @@ object CssValue {
     case CssValueVar(name)                 => s"var($name)"
     case CssHsl(h, s, l, a)                => s"hsl($h $s% $l% / $a)"
     case CssRgb(r, g, b, a)                => s"rgb(${r * 255} ${g * 255} ${b * 255} / $a)"
-    case CssRepeat(count, tracks)          => s"repeat($count, $tracks)"
     case x: CssExpr                        => CssExpr.printer.print(x)
   }
 
@@ -159,21 +158,6 @@ object CssRgb {
   }
 
   def fromHsl(hsl: CssHsl): CssRgb = fromHsl(hsl.h, hsl.s, hsl.l, hsl.a)
-}
-
-final case class CssRepeat private (count: CssValue, tracks: CssValue) extends CssValue
-
-object CssRepeat {
-  // TODO: GRID - Make tracks more precise?
-
-  def autoFill(tracks: CssValue): CssRepeat = CssRepeat(kw.autoFill, tracks)
-
-  def autoFit(tracks: CssValue): CssRepeat = CssRepeat(kw.autoFit, tracks)
-
-  def apply(count: Int, tracks: CssValue): CssRepeat = {
-    assert(count > 1)
-    CssRepeat(count.n, tracks)
-  }
 }
 
 sealed trait CssExpr extends CssValue with CssSize {

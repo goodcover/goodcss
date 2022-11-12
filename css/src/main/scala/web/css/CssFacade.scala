@@ -63,6 +63,8 @@ trait CssFacade extends CssKeyframes {
   def counter(c: CssKeyword): CssValue                     = CssBuiltin("counter", Seq(c.keyword))
   def counters(c: CssKeyword, separator: String): CssValue = CssBuiltin("counter", Seq(c.keyword, separator))
 
+  def repeat(count: CssValue, tracks: CssValue): CssValue = CssBuiltin("repeat", Seq(count.print, tracks.print))
+
   def url(s: String): CssValue = CssBuiltin("url", Seq(s))
 
   def hsl(h: Hue, s: BoundedPercent, l: BoundedPercent): CssHsl                  = CssHsl(h, s, l)
