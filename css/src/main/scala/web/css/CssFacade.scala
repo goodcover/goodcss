@@ -49,9 +49,9 @@ trait CssFacade extends CssKeyframes {
   /** Create a CSS variable for any CSS value */
   def valueVar(name: String): CssValueVar = CssValueVar(name)
 
-  def spaced(xs: CssValue*): CssValue             = CssDelimited(xs)
-  def delim(sep: String)(xs: CssValue*): CssValue = CssDelimited(xs, sep)
-  def bracket(xs: CssValue*): CssValue            = CssDelimited(xs, "[", " ", "]")
+  def spaced(xs: CssValue*): CssValue                   = CssDelimited(xs)
+  def delim(separator: String)(xs: CssValue*): CssValue = CssDelimited(xs, separator = separator)
+  def bracket(xs: CssValue*): CssValue                  = CssDelimited(xs, "[", " ", "]")
 
   @inline def call(fn: String, exprs: CssExpr*): CssExpr = CssExpr.Call(fn, exprs)
 
