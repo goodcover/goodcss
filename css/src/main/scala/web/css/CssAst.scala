@@ -83,6 +83,8 @@ object ClassName {
     name |+| css.cn
   }
 
+  def fromMixed(x: ClassName | Css): ClassName = fromMixed(Seq(x))
+
   implicit val eq: Eq[ClassName] = Eq.fromUniversalEquals
 
   implicit val monoid: Monoid[ClassName] = Monoid.instance(empty, GoodMotion.cx(_, _))

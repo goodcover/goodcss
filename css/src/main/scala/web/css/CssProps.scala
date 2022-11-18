@@ -23,6 +23,7 @@ trait CssProps {
   val borderRadius             = prop"border-radius"
   val borderRight              = prop"border-right"
   val borderRightColor         = prop"border-right-color"
+  val borderRightWidth         = prop"border-right-width"
   val borderStyle              = prop"border-style"
   val borderTop                = prop"border-top"
   val borderTopColor           = prop"border-top-color"
