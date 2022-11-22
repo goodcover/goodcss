@@ -61,7 +61,6 @@ object CssValue {
     case CssKeyword(k)                     => k
     case CssQuoted(s)                      => s"'$s'"
     case CssDelimited(Seq(), _, _, _)      => ""
-    // TODO: GRID - Is it ok to remove all empty values?
     case CssDelimited(xs, start, sep, end) => xs.map(_.print).filter(_.nonEmpty).mkString(start, sep, end)
     case CssBuiltin(name, args, sep)       => args.mkString(s"$name(", sep, ")")
     case CssValueVar(name)                 => s"var($name)"
