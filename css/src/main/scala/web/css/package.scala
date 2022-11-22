@@ -2,6 +2,7 @@ package web
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric
+import io.estatico.newtype.macros.newsubtype
 
 package object css extends CssFacade with CssImplicits with CssKeywords with CssProps {
 
@@ -17,4 +18,12 @@ package object css extends CssFacade with CssImplicits with CssKeywords with Css
 
   // Why does CssSelector.fromClassName not get selected?
   @inline implicit def classNameToSelector(name: ClassName): CssSelector = CssSelector.fromClassName(name)
+
+  @newsubtype case class CssKeywordAndExpr(kw: CssKeyword) {
+    def expr: CssExpr = CssExpr.Unsafe(kw.keyword)
+  }
+
+  object CssKeywordAndExpr {
+    implicit def toExpr(kw: CssKeywordAndExpr): CssExpr = kw.expr
+  }
 }
