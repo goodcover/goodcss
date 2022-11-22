@@ -60,8 +60,9 @@ object CssValue {
   implicit val printer: CssPrinter[CssValue] = _ match {
     case CssKeyword(k)                     => k
     case CssQuoted(s)                      => s"'$s'"
-    case CssDelimited(Seq(), _, _, _)      => ""
-    case CssDelimited(xs, start, sep, end) => xs.map(_.print).filter(_.nonEmpty).mkString(start, sep, end)
+    case CssDelimited(xs, start, sep, end) =>
+      val printedValues = xs.map(printer.print).filter(_.nonEmpty)
+      if (printedValues.isEmpty) "" else printedValues.mkString(start, sep, end)
     case CssBuiltin(name, args, sep)       => args.mkString(s"$name(", sep, ")")
     case CssValueVar(name)                 => s"var($name)"
     case CssHsl(h, s, l, a)                => s"hsl($h $s% $l% / $a)"
@@ -91,6 +92,10 @@ final case class CssKeyword(keyword: String) extends CssValue with CssSize
 
 final case class CssQuoted(text: String) extends CssValue
 
+/**
+  * When printing, any values that print as `""` will be removed from `values`. If the resulting printed values are
+  * empty then nothing is printed.
+  */
 final case class CssDelimited(values: Seq[CssValue], start: String = "", separator: String = " ", end: String = "")
     extends CssValue {
   def sep(separator: String): CssDelimited = copy(separator = separator)
