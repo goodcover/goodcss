@@ -15,7 +15,7 @@ trait CssKeywords {
   val _wait        = kw"wait"
   val absolute     = kw"absolute"
   val appearance   = kw"appearance"
-  val auto         = kwe"auto"
+  val auto         = kw"auto"
   val autoFill     = kw"auto-fill"
   val autoFit      = kw"auto-fit"
   val baseline     = kw"baseline"

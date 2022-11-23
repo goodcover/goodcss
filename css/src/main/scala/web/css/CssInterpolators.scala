@@ -8,9 +8,6 @@ final class CssInterpolators(val sc: StringContext) extends AnyVal {
   /** CSS keyword */
   def kw(ss: String*): CssKeyword = CssKeyword(sc.s(ss: _*))
 
-  /** CSS keyword and expression */
-  def kwe(ss: String*): CssKeywordAndExpr = CssKeywordAndExpr(kw(ss: _*))
-
   /** CSS property name */
   def prop(ss: String*): CssProp = CssProp(sc.s(ss: _*))
 

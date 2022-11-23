@@ -55,34 +55,38 @@ trait CssFacade extends CssKeyframes {
 
   @inline def call(fn: String, exprs: CssExpr*): CssExpr = CssExpr.Call(fn, exprs)
 
+  // Functions that may be used anywhere a <dimension>, <percentage>, or <number> is allowed.
   def min(exprs: CssExpr*): CssExpr                      = call("min", exprs: _*)
   def max(exprs: CssExpr*): CssExpr                      = call("max", exprs: _*)
-  def minmax(min: CssExpr, max: CssExpr): CssExpr        = call("minmax", min, max)
   def clamp(x: CssExpr, y: CssExpr, z: CssExpr): CssExpr = call("clamp", x, y, z)
 
+  // Function that may be used anywhere a <string> is allowed.
   def counter(c: CssKeyword): CssValue                     = CssBuiltin("counter", Seq(c.keyword))
   def counters(c: CssKeyword, separator: String): CssValue = CssBuiltin("counter", Seq(c.keyword, separator))
 
-  def repeat(count: CssValue, tracks: CssValue): CssValue = CssBuiltin("repeat", Seq(count.print, tracks.print))
+  // Functions that may be used with CSS Grids.
+  def minmax(min: CssValue, max: CssValue): CssBuiltin      = CssBuiltin("minmax", Seq(min.print, max.print))
+  def fitContent(value: CssExpr): CssBuiltin                = CssBuiltin("fit-content", Seq(value.print))
+  def repeat(count: CssValue, tracks: CssValue): CssBuiltin = CssBuiltin("repeat", Seq(count.print, tracks.print))
 
+  // Function to include a file.
   def url(s: String): CssValue = CssBuiltin("url", Seq(s))
 
+  // Color functions.
   def hsl(h: Hue, s: BoundedPercent, l: BoundedPercent): CssHsl                  = CssHsl(h, s, l)
   def hsl(h: Hue, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat): CssHsl = CssHsl(h, s, l, a)
+  def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt): CssRgb                   = CssRgb(r, g, b)
+  def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt, a: BoundedFloat): CssRgb  = CssRgb(r, g, b, a)
+  def blackToColor(rgb: CssRgb): CssValue                                        = CssSvgColorFilter.blackToRgb(rgb)
+  def blackToColor(hsl: CssHsl): CssValue                                        = CssSvgColorFilter.blackToHsl(hsl)
 
-  def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt): CssRgb                  = CssRgb(r, g, b)
-  def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt, a: BoundedFloat): CssRgb = CssRgb(r, g, b, a)
-
-  def blackToColor(rgb: CssRgb): CssValue = CssSvgColorFilter.blackToRgb(rgb)
-  def blackToColor(hsl: CssHsl): CssValue = CssSvgColorFilter.blackToHsl(hsl)
-
-  def scale(x: CssExpr): CssExpr             = call("scale", x)
-  def scale(x: CssExpr, y: CssExpr): CssExpr = call("scale", x, y)
-  def scaleX(x: CssExpr): CssExpr            = call("scaleX", x)
-  def scaleY(y: CssExpr): CssExpr            = call("scaleY", y)
-
-  def rotate(r: CssExpr): CssExpr = call("rotate", r)
-
+  // <transform-function>s
+  // FIXME: These are not expressions. They may only be used in the transform property.
+  def rotate(r: CssExpr): CssExpr                = call("rotate", r)
+  def scale(x: CssExpr): CssExpr                 = call("scale", x)
+  def scale(x: CssExpr, y: CssExpr): CssExpr     = call("scale", x, y)
+  def scaleX(x: CssExpr): CssExpr                = call("scaleX", x)
+  def scaleY(y: CssExpr): CssExpr                = call("scaleY", y)
   def translate(x: CssExpr, y: CssExpr): CssExpr = call("translate", x, y)
   def translateX(x: CssExpr): CssExpr            = call("translateX", x)
   def translateY(y: CssExpr): CssExpr            = call("translateY", y)
