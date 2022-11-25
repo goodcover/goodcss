@@ -81,15 +81,14 @@ trait CssFacade extends CssKeyframes {
   def blackToColor(hsl: CssHsl): CssValue                                        = CssSvgColorFilter.blackToHsl(hsl)
 
   // <transform-function>s
-  // FIXME: These are not expressions. They may only be used in the transform property.
-  def rotate(r: CssExpr): CssExpr                = call("rotate", r)
-  def scale(x: CssExpr): CssExpr                 = call("scale", x)
-  def scale(x: CssExpr, y: CssExpr): CssExpr     = call("scale", x, y)
-  def scaleX(x: CssExpr): CssExpr                = call("scaleX", x)
-  def scaleY(y: CssExpr): CssExpr                = call("scaleY", y)
-  def translate(x: CssExpr, y: CssExpr): CssExpr = call("translate", x, y)
-  def translateX(x: CssExpr): CssExpr            = call("translateX", x)
-  def translateY(y: CssExpr): CssExpr            = call("translateY", y)
+  def rotate(r: CssExpr): CssValue                = CssBuiltin("rotate", Seq(r.print))
+  def scale(x: CssExpr): CssValue                 = CssBuiltin("scale", Seq(x.print))
+  def scale(x: CssExpr, y: CssExpr): CssValue     = CssBuiltin("scale", Seq(x.print, y.print))
+  def scaleX(x: CssExpr): CssValue                = CssBuiltin("scaleX", Seq(x.print))
+  def scaleY(y: CssExpr): CssValue                = CssBuiltin("scaleY", Seq(y.print))
+  def translate(x: CssExpr, y: CssExpr): CssValue = CssBuiltin("translate", Seq(x.print, y.print))
+  def translateX(x: CssExpr): CssValue            = CssBuiltin("translateX", Seq(x.print))
+  def translateY(y: CssExpr): CssValue            = CssBuiltin("translateY", Seq(y.print))
 
   def byFold[A, Q](x: (Q, A), xs: (Q, A)*)(implicit conv: CssMediaConv[A, Q]): conv.T = conv(NonEmptySeq(x, xs))
 
