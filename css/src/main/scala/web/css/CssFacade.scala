@@ -49,40 +49,46 @@ trait CssFacade extends CssKeyframes {
   /** Create a CSS variable for any CSS value */
   def valueVar(name: String): CssValueVar = CssValueVar(name)
 
-  def spaced(xs: CssValue*): CssValue             = CssDelimited(xs)
-  def delim(sep: String)(xs: CssValue*): CssValue = CssDelimited(xs, sep)
+  def spaced(xs: CssValue*): CssValue                   = CssDelimited(xs)
+  def delim(separator: String)(xs: CssValue*): CssValue = CssDelimited(xs, separator = separator)
+  def bracket(xs: CssValue*): CssValue                  = CssDelimited(xs, "[", " ", "]")
 
   @inline def call(fn: String, exprs: CssExpr*): CssExpr = CssExpr.Call(fn, exprs)
 
+  // Functions that may be used anywhere a <dimension>, <percentage>, or <number> is allowed.
   def min(exprs: CssExpr*): CssExpr                      = call("min", exprs: _*)
   def max(exprs: CssExpr*): CssExpr                      = call("max", exprs: _*)
-  def minmax(min: CssExpr, max: CssExpr): CssExpr        = call("minmax", min, max)
   def clamp(x: CssExpr, y: CssExpr, z: CssExpr): CssExpr = call("clamp", x, y, z)
 
+  // Function that may be used anywhere a <string> is allowed.
   def counter(c: CssKeyword): CssValue                     = CssBuiltin("counter", Seq(c.keyword))
   def counters(c: CssKeyword, separator: String): CssValue = CssBuiltin("counter", Seq(c.keyword, separator))
 
+  // Functions that may be used with CSS Grids.
+  def minmax(min: CssValue, max: CssValue): CssBuiltin      = CssBuiltin("minmax", Seq(min.print, max.print))
+  def fitContent(value: CssExpr): CssBuiltin                = CssBuiltin("fit-content", Seq(value.print))
+  def repeat(count: CssValue, tracks: CssValue): CssBuiltin = CssBuiltin("repeat", Seq(count.print, tracks.print))
+
+  // Function to include a file.
   def url(s: String): CssValue = CssBuiltin("url", Seq(s))
 
+  // Color functions.
   def hsl(h: Hue, s: BoundedPercent, l: BoundedPercent): CssHsl                  = CssHsl(h, s, l)
   def hsl(h: Hue, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat): CssHsl = CssHsl(h, s, l, a)
+  def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt): CssRgb                   = CssRgb(r, g, b)
+  def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt, a: BoundedFloat): CssRgb  = CssRgb(r, g, b, a)
+  def blackToColor(rgb: CssRgb): CssValue                                        = CssSvgColorFilter.blackToRgb(rgb)
+  def blackToColor(hsl: CssHsl): CssValue                                        = CssSvgColorFilter.blackToHsl(hsl)
 
-  def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt): CssRgb                  = CssRgb(r, g, b)
-  def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt, a: BoundedFloat): CssRgb = CssRgb(r, g, b, a)
-
-  def blackToColor(rgb: CssRgb): CssValue = CssSvgColorFilter.blackToRgb(rgb)
-  def blackToColor(hsl: CssHsl): CssValue = CssSvgColorFilter.blackToHsl(hsl)
-
-  def scale(x: CssExpr): CssExpr             = call("scale", x)
-  def scale(x: CssExpr, y: CssExpr): CssExpr = call("scale", x, y)
-  def scaleX(x: CssExpr): CssExpr            = call("scaleX", x)
-  def scaleY(y: CssExpr): CssExpr            = call("scaleY", y)
-
-  def rotate(r: CssExpr): CssExpr = call("rotate", r)
-
-  def translate(x: CssExpr, y: CssExpr): CssExpr = call("translate", x, y)
-  def translateX(x: CssExpr): CssExpr            = call("translateX", x)
-  def translateY(y: CssExpr): CssExpr            = call("translateY", y)
+  // <transform-function>s
+  def rotate(r: CssExpr): CssValue                = CssBuiltin("rotate", Seq(r.print))
+  def scale(x: CssExpr): CssValue                 = CssBuiltin("scale", Seq(x.print))
+  def scale(x: CssExpr, y: CssExpr): CssValue     = CssBuiltin("scale", Seq(x.print, y.print))
+  def scaleX(x: CssExpr): CssValue                = CssBuiltin("scaleX", Seq(x.print))
+  def scaleY(y: CssExpr): CssValue                = CssBuiltin("scaleY", Seq(y.print))
+  def translate(x: CssExpr, y: CssExpr): CssValue = CssBuiltin("translate", Seq(x.print, y.print))
+  def translateX(x: CssExpr): CssValue            = CssBuiltin("translateX", Seq(x.print))
+  def translateY(y: CssExpr): CssValue            = CssBuiltin("translateY", Seq(y.print))
 
   def byFold[A, Q](x: (Q, A), xs: (Q, A)*)(implicit conv: CssMediaConv[A, Q]): conv.T = conv(NonEmptySeq(x, xs))
 

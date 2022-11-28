@@ -58,14 +58,16 @@ sealed trait CssValue
 object CssValue {
 
   implicit val printer: CssPrinter[CssValue] = _ match {
-    case CssKeyword(k)               => k
-    case CssQuoted(s)                => s"'$s'"
-    case CssDelimited(xs, sep)       => xs.map(_.print).mkString(sep)
-    case CssBuiltin(name, args, sep) => args.mkString(s"$name(", sep, ")")
-    case CssValueVar(name)           => s"var($name)"
-    case CssHsl(h, s, l, a)          => s"hsl($h $s% $l% / $a)"
-    case CssRgb(r, g, b, a)          => s"rgb(${r * 255} ${g * 255} ${b * 255} / $a)"
-    case x: CssExpr                  => CssExpr.printer.print(x)
+    case CssKeyword(k)                     => k
+    case CssQuoted(s)                      => s"'$s'"
+    case CssDelimited(xs, start, sep, end) =>
+      val printedValues = xs.map(printer.print).filter(_.nonEmpty)
+      if (printedValues.isEmpty) "" else printedValues.mkString(start, sep, end)
+    case CssBuiltin(name, args, sep)       => args.mkString(s"$name(", sep, ")")
+    case CssValueVar(name)                 => s"var($name)"
+    case CssHsl(h, s, l, a)                => s"hsl($h $s% $l% / $a)"
+    case CssRgb(r, g, b, a)                => s"rgb(${r * 255} ${g * 255} ${b * 255} / $a)"
+    case x: CssExpr                        => CssExpr.printer.print(x)
   }
 
   @inline implicit def toRhs(x: CssValue): CssRhs[CssValue] = CssRhs.Value(x)
@@ -90,7 +92,12 @@ final case class CssKeyword(keyword: String) extends CssValue with CssSize
 
 final case class CssQuoted(text: String) extends CssValue
 
-final case class CssDelimited(values: Seq[CssValue], separator: String = " ") extends CssValue {
+/**
+  * When printing, any values that print as `""` will be removed from `values`. If the resulting printed values are
+  * empty then nothing is printed.
+  */
+final case class CssDelimited(values: Seq[CssValue], start: String = "", separator: String = " ", end: String = "")
+    extends CssValue {
   def sep(separator: String): CssDelimited = copy(separator = separator)
 }
 
@@ -109,12 +116,12 @@ sealed trait CssColor extends CssValue
 final case class CssHsl(h: Hue, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat = 1.0) extends CssColor
 
 object CssHsl {
-  val black       = CssHsl(0, 0.0, 0.0)
-  val white       = CssHsl(0, 0.0, 100.0)
-  val red         = CssHsl(0, 100.0, 25.0)
-  val green       = CssHsl(120, 100.0, 25.0)
-  val blue        = CssHsl(240, 100.0, 25.0)
-  val transparent = CssHsl(0, 0.0, 0.0, 0.0)
+  val black: CssHsl       = CssHsl(0, 0.0, 0.0)
+  val white: CssHsl       = CssHsl(0, 0.0, 100.0)
+  val red: CssHsl         = CssHsl(0, 100.0, 25.0)
+  val green: CssHsl       = CssHsl(120, 100.0, 25.0)
+  val blue: CssHsl        = CssHsl(240, 100.0, 25.0)
+  val transparent: CssHsl = CssHsl(0, 0.0, 0.0, 0.0)
 }
 
 final case class CssRgb private (r: Double, g: Double, b: Double, a: Double) extends CssColor {
@@ -129,12 +136,12 @@ object CssRgb {
   def fromFloats(r: BoundedFloat, g: BoundedFloat, b: BoundedFloat, a: BoundedFloat = 1d): CssRgb =
     new CssRgb(r, g, b, a)
 
-  val black       = fromFloats(0d, 0d, 0d)
-  val white       = fromFloats(1d, 1d, 1d)
-  val red         = apply(128, 0, 0)
-  val green       = apply(0, 128, 0)
-  val blue        = apply(0, 0, 128)
-  val transparent = fromFloats(0d, 0d, 0d, 0d)
+  val black: CssRgb       = fromFloats(0d, 0d, 0d)
+  val white: CssRgb       = fromFloats(1d, 1d, 1d)
+  val red: CssRgb         = apply(128, 0, 0)
+  val green: CssRgb       = apply(0, 128, 0)
+  val blue: CssRgb        = apply(0, 0, 128)
+  val transparent: CssRgb = fromFloats(0d, 0d, 0d, 0d)
 
   def opacity(a: BoundedFloat): CssRgb = fromFloats(1d, 1d, 1d, a)
 

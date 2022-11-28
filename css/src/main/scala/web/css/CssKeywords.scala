@@ -3,10 +3,11 @@ package web.css
 trait CssKeywords {
 
   object kw extends CssKeywords {
-    // Keywords that conflict with property names
+    // Keywords that conflict with property or function names
     val bottom  = kw"bottom"
     val left    = kw"left"
     val outline = kw"outline"
+    val repeat  = kw"repeat"
     val right   = kw"right"
     val top     = kw"top"
   }
@@ -15,6 +16,8 @@ trait CssKeywords {
   val absolute     = kw"absolute"
   val appearance   = kw"appearance"
   val auto         = kw"auto"
+  val autoFill     = kw"auto-fill"
+  val autoFit      = kw"auto-fit"
   val baseline     = kw"baseline"
   val block        = kw"block"
   val both         = kw"both"
@@ -55,7 +58,6 @@ trait CssKeywords {
   val pre          = kw"pre"
   val preWrap      = kw"pre-wrap"
   val relative     = kw"relative"
-  val repeat       = kw"repeat"
   val row          = kw"row"
   val rowReverse   = kw"row-reverse"
   val selfEnd      = kw"self-end"
