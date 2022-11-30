@@ -74,6 +74,22 @@ final case class CssSelector(selector: String) extends CssSelectorLike {
   def attrContains(name: String, value: String, caseSensitive: Boolean = true): CssSelector =
     attr(name, value, caseSensitive, "*=")
 
+  def nthChild(a: Int, b: Int): CssSelector = {
+    val offset = if (b == 0) "" else if (b > 0) s"+$b" else b.toString
+    CssSelector(s"$selector:nth-child(${a.toString}n$offset)")
+  }
+
+  def nthChild(kw: CssKeyword): CssSelector =
+    CssSelector(s"$selector:nth-child($kw)")
+
+  def nthOfType(a: Int, b: Int): CssSelector = {
+    val offset = if (b == 0) "" else if (b > 0) s"+$b" else b.toString
+    CssSelector(s"$selector:nth-of-type(${a.toString}n$offset)")
+  }
+
+  def nthOfType(kw: CssKeyword): CssSelector =
+    CssSelector(s"$selector:nth-of-type($kw)")
+
   def clobber: CssSelector = CssSelector(selector * 4)
 
   // Pseudo classes
