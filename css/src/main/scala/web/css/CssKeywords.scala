@@ -30,6 +30,7 @@ trait CssKeywords {
   val easeInOut    = kw"ease-in-out"
   val end          = kw"end"
   val fitContent   = kw"fit-content"
+  val fixed        = kw"fixed"
   val flex         = kw"flex"
   val flexEnd      = kw"flex-end"
   val flexStart    = kw"flex-start"
