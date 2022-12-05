@@ -76,6 +76,7 @@ trait CssKeywords {
   val underline    = kw"underline"
   val unset        = kw"unset"
   val uppercase    = kw"uppercase"
+  val visible      = kw"visible"
   val wrap         = kw"wrap"
 
 }
