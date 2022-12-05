@@ -26,6 +26,7 @@ trait CssKeywords {
   val column       = kw"column"
   val contentBox   = kw"content-box"
   val currentcolor = kw"currentcolor"
+  val default      = kw"default"
   val easeInOut    = kw"ease-in-out"
   val end          = kw"end"
   val fitContent   = kw"fit-content"
