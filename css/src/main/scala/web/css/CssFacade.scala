@@ -76,7 +76,6 @@ trait CssFacade extends CssKeyframes {
   def hsl(h: Hue, s: BoundedPercent, l: BoundedPercent): CssHsl                  = CssHsl(h, s, l)
   def hsl(h: Hue, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat): CssHsl = CssHsl(h, s, l, a)
   def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt): CssRgb                   = CssRgb(r, g, b)
-  // TODO rename this to rgba(...)
   def rgb(r: BoundedInt, g: BoundedInt, b: BoundedInt, a: BoundedFloat): CssRgb  = CssRgb(r, g, b, a)
   def blackToColor(rgb: CssRgb): CssValue                                        = CssSvgColorFilter.blackToRgb(rgb)
   def blackToColor(hsl: CssHsl): CssValue                                        = CssSvgColorFilter.blackToHsl(hsl)
