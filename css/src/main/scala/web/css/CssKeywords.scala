@@ -36,8 +36,6 @@ trait CssKeywords {
   val flexEnd      = kw"flex-end"
   val flexStart    = kw"flex-start"
   val grid         = kw"grid"
-  val gridColumn   = kw"grid-column"
-  val gridRow      = kw"grid-row"
   val hidden       = kw"hidden"
   val infinite     = kw"infinite"
   val inherit      = kw"inherit"
