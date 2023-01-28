@@ -21,6 +21,7 @@ trait CssKeywords {
   val baseline     = kw"baseline"
   val block        = kw"block"
   val both         = kw"both"
+  val breakWord    = kw"break-word"
   val capitalize   = kw"capitalize"
   val center       = kw"center"
   val column       = kw"column"

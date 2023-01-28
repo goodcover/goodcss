@@ -97,6 +97,7 @@ trait CssProps {
   val outlineStyle             = prop"outline-style"
   val outlineWidth             = prop"outline-width"
   val overflow                 = prop"overflow"
+  val overflowWrap             = prop"overflow-wrap"
   val padding                  = prop"padding"
   val paddingBlock             = prop"padding-block"
   val paddingBlockEnd          = prop"padding-block-end"
