@@ -3,6 +3,7 @@ package web.css
 trait CssProps {
   val prop: CssProps = this
 
+  val alignContent             = prop"align-content"
   val alignItems               = prop"align-items"
   val alignSelf                = prop"align-self"
   val animation                = prop"animation"
