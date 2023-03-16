@@ -28,6 +28,8 @@ object CssRhs {
 
   val empty: CssRhs[CssValue] = Empty
 
+  @inline implicit def toRhs[A](value: A): CssRhs[A] = CssRhs.Value(value)
+
   def apply[A](values: Seq[(MediaQuery, A)]): CssRhs[A] = values match {
     case Seq((MediaQuery("all"), x)) => Value(x)
     case xs                          => NonEmptySeq.fromSeq(xs).map(Values(_)).getOrElse(Empty)
@@ -69,8 +71,6 @@ object CssValue {
     case CssRgb(r, g, b, a)                => s"rgb(${r * 255} ${g * 255} ${b * 255} / $a)"
     case x: CssExpr                        => CssExpr.printer.print(x)
   }
-
-  @inline implicit def toRhs(x: CssValue): CssRhs[CssValue] = CssRhs.Value(x)
 
   implicit val eq: Eq[CssValue] = (x, y) =>
     (x, y) match {
