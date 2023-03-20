@@ -3,7 +3,6 @@ package web.css
 import cats.{Eq, Monoid}
 import cats.syntax.monoid._
 import scala.scalajs.js
-import scala.scalajs.js.|
 
 sealed trait Css {
   def when(test: Boolean): Css           = if (test) this else Css.empty
@@ -71,7 +70,7 @@ final case class ClassName private[css] (name: String) {
 object ClassName {
   val empty = ClassName("")
 
-  def fromMixed(xs: Seq[ClassName | Css]): ClassName = {
+  def fromMixed(xs: Seq[Style]): ClassName = {
     val (name, css) = xs.foldLeft((ClassName.empty, Css.empty)) { (x, y) =>
       val (name, css) = x
       (y: Any) match {
@@ -83,7 +82,7 @@ object ClassName {
     name |+| css.cn
   }
 
-  def fromMixed(x: ClassName | Css): ClassName = fromMixed(Seq(x))
+  def fromMixed(x: Style): ClassName = fromMixed(Seq(x))
 
   implicit val eq: Eq[ClassName] = Eq.fromUniversalEquals
 

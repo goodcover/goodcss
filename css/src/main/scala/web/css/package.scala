@@ -1,9 +1,13 @@
 package web
 
+import cats.Monoid
+import cats.syntax.semigroup._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric
 import io.estatico.newtype.macros.newsubtype
 import io.estatico.newtype.ops.toCoercibleIdOps
+
+import scala.scalajs.js.|
 
 package object css extends CssFacade with CssImplicits with CssKeywords with CssProps {
 
@@ -14,6 +18,15 @@ package object css extends CssFacade with CssImplicits with CssKeywords with Css
   type BoundedPercent = Double Refined numeric.Interval.Closed[0.0, 100.0]
   type BoundedFloat   = Double Refined numeric.Interval.Closed[0.0, 1.0]
   type BoundedInt     = Int Refined numeric.Interval.Closed[0, 255]
+
+  type Style = ClassName | Css
+
+  implicit val styleMonoid: Monoid[Style] =
+    Monoid.instance(ClassName.empty, (a, b) => ClassName.fromMixed(a) |+| ClassName.fromMixed(b))
+
+  implicit class StyleOps(val style: Style) extends AnyVal {
+    def cn: ClassName = ClassName.fromMixed(style)
+  }
 
   @inline implicit def toPrinterOps[A: CssPrinter](target: A): CssPrinter.Ops[A] = new CssPrinter.Ops[A](target)
 
