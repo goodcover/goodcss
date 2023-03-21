@@ -28,7 +28,7 @@ object CssRhs {
 
   val empty: CssRhs[CssValue] = Empty
 
-  @inline implicit def toRhs[A](value: A): CssRhs[A] = CssRhs.Value(value)
+  @inline implicit def fromValue[A](value: A): CssRhs[A] = CssRhs.Value(value)
 
   def apply[A](values: Seq[(MediaQuery, A)]): CssRhs[A] = values match {
     case Seq((MediaQuery("all"), x)) => Value(x)
