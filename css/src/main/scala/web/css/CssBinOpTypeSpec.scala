@@ -66,8 +66,6 @@ object CssBinOpTypeSpec {
     */
   object NeverCssClamp {
     neverAll[CssClamp, CssClamp]
-    neverAll[CssExpr, CssClamp]
-    neverAll[CssClamp, CssExpr]
   }
 
   /**
@@ -118,6 +116,8 @@ object CssBinOpTypeSpec {
     yes(summonAll[CssScalar[Px], CssExpr])
     yes(summonAll[CssExpr, CssScalar[Num]])
     yes(summonAll[CssScalar[Num], CssExpr])
+    yes(summonAll[CssExpr, CssClamp])
+    yes(summonAll[CssClamp, CssExpr])
 
     no(summonAll[CssDim, CssDim])
     no(summonAll[CssDim, CssExpr])
