@@ -21,6 +21,8 @@ trait CssFacade extends CssKeyframes {
     */
   val sel: CssSelector = CssSelector.empty
 
+  val weakClobber: CssSelector = CssSelector("&&")
+
   val clobber: CssSelector = CssSelector("&&&&")
 
   /** Create top-level CSS scope
