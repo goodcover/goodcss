@@ -36,7 +36,7 @@ object CssSvgColorFilter {
     else {
       val container = document.createElementNS(svgns, "svg")
       container.id = id
-      container.setAttribute("style", "display: none")
+      container.setAttribute("style", "width: 0; height: 0;")
       document.body.appendChild(container)
       container
     }
