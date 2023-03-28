@@ -198,7 +198,7 @@ object CssExpr {
   @inline implicit def toBinOpOps(x: CssExpr): CssBinOpOps[CssExpr] = new CssBinOpOps[CssExpr](x)
   @inline implicit def toRhs(x: CssExpr): CssRhs[CssExpr]           = CssRhs.Value(x)
 
-  implicit val eq: Eq[CssExpr] = (x, y) =>
+  implicit lazy val eq: Eq[CssExpr] = (x, y) =>
     (x, y) match {
       case (x: CssScalar[_], y: CssScalar[_])     => x.unit == y.unit && x.unitless == y.unitless
       case (x: CssExpr.Call, y: CssExpr.Call)     => x.f == y.f && x.args === y.args

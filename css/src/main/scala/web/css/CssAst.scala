@@ -15,7 +15,7 @@ object Css {
 
   val empty: Css = Empty
 
-  implicit val printer: CssPrinter[Css] = _ match {
+  implicit lazy val printer: CssPrinter[Css] = _ match {
     case Empty                         => ""
     case CssScope(sel, body)           =>
       val wrapped = body.filterNot(_.isEmpty).map(_.print).mkString("\n")
