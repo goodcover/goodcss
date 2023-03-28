@@ -71,20 +71,17 @@ trait CssBinOpAExpr extends CssBinOpExprA {
 
 trait CssBinOpScalarScalarExpr extends CssBinOpAExpr {
 
-  sealed class BinOpScalarScalarExpr[O <: CssBinOperator, A: UnitSuffix, B: UnitSuffix](
-    f: (CssExpr, CssExpr) => CssExpr
-  ) extends CssBinOp[O, CssScalar[A], CssScalar[B]] {
+  sealed class BinOpScalarScalarExpr[O <: CssBinOperator, A, B](f: (CssExpr, CssExpr) => CssExpr)
+      extends CssBinOp[O, CssScalar[A], CssScalar[B]] {
     type T = CssExpr
 
     @inline def apply(x: CssScalar[A], y: CssScalar[B]): CssExpr = f(x, y)
   }
 
-  implicit def binOpAddScalarExprB[A: UnitSuffix, B: UnitSuffix](implicit
-    @unused ev: RelativeUnit[A]
-  ): BinOpScalarScalarExpr[Add, A, B] =
+  implicit def binOpAddScalarExprB[A, B](implicit @unused ev: RelativeUnit[A]): BinOpScalarScalarExpr[Add, A, B] =
     new BinOpScalarScalarExpr(CssExpr.Op(_, CssBinOperator.Add, _))
 
-  implicit def binOpSubtractScalarExprB[A: UnitSuffix, B: UnitSuffix](implicit
+  implicit def binOpSubtractScalarExprB[A, B](implicit
     @unused ev: RelativeUnit[A]
   ): BinOpScalarScalarExpr[Subtract, A, B] =
     new BinOpScalarScalarExpr(CssExpr.Op(_, CssBinOperator.Subtract, _))
@@ -165,12 +162,10 @@ object CssBinOp extends CssBinOpScalarScalarExpr {
   implicit def binOpAddScalarScalar[U]: BinOpScalarScalar[Add, U]           = binOpAddScalarScalarImpl.units[U]
   implicit def binOpSubtractScalarScalar[U]: BinOpScalarScalar[Subtract, U] = binOpSubtractScalarScalarImpl.units[U]
 
-  implicit def binOpAddScalarExprA[A: UnitSuffix, B: UnitSuffix](implicit
-    @unused ev: RelativeUnit[B]
-  ): BinOpScalarScalarExpr[Add, A, B] =
+  implicit def binOpAddScalarExprA[A, B](implicit @unused ev: RelativeUnit[B]): BinOpScalarScalarExpr[Add, A, B] =
     new BinOpScalarScalarExpr(CssExpr.Op(_, CssBinOperator.Add, _))
 
-  implicit def binOpSubtractScalarExprA[A: UnitSuffix, B: UnitSuffix](implicit
+  implicit def binOpSubtractScalarExprA[A, B](implicit
     @unused ev: RelativeUnit[B]
   ): BinOpScalarScalarExpr[Subtract, A, B] =
     new BinOpScalarScalarExpr(CssExpr.Op(_, CssBinOperator.Subtract, _))
