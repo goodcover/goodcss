@@ -59,7 +59,7 @@ sealed trait CssValue
 
 object CssValue {
 
-  implicit lazy val printer: CssPrinter[CssValue] = _ match {
+  implicit val printer: CssPrinter[CssValue] = _ match {
     case CssKeyword(k)                     => k
     case CssQuoted(s)                      => s"'$s'"
     case CssDelimited(xs, start, sep, end) =>
