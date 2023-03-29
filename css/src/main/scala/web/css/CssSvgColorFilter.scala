@@ -25,7 +25,7 @@ object CssSvgColorFilter {
       0 0 1 0 $b
       0 0 0 $a 0
     """)
-    filter.appendChild(matrix)
+    filter.appendChild(matrix): Unit
     filter
   }
 
@@ -37,7 +37,7 @@ object CssSvgColorFilter {
       val container = document.createElementNS(svgns, "svg")
       container.id = id
       container.setAttribute("style", "width: 0; height: 0;")
-      document.body.appendChild(container)
+      document.body.appendChild(container): Unit
       container
     }
   }
@@ -53,7 +53,7 @@ object CssSvgColorFilter {
       val id = filterId(rgb)
       if (document.getElementById(id) == null) {
         val filter = createColorFilter(rgb)
-        filterContainer.appendChild(filter)
+        filterContainer.appendChild(filter): Unit
       }
       url(s"#$id")
     }
