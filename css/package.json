@@ -1,10 +1,8 @@
 {
   "private": true,
   "license": "UNLICENSED",
-  "dependencies": {
-    "@emotion/css": "*"
-  },
   "devDependencies": {
+    "@emotion/css": "*",
     "@swc/core": "^1.2.65",
     "jsdom": "^17.0.0",
     "swc-loader": "^0.1.14",
