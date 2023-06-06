@@ -42,6 +42,9 @@ trait CssFacade extends CssKeyframes {
   def css(selector: CssSelector.Endo, selectors: CssSelector.Endo*)(body: Css*): Css =
     CssScope(selector(sel) +: selectors.map(f => f(sel)), body)
 
+  /** Create a class name with "gc-" prefix */
+  def gc(name: String): ClassName = ClassName(name).map("gc-" + _)
+
   /** Create a class name with "gcn-" prefix */
   def gcn(name: String): ClassName = ClassName(name).map("gcn-" + _)
 
