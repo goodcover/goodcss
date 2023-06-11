@@ -18,11 +18,11 @@ trait CssImplicits {
 
   implicit def ruleSyntaxForMetaProp(name: CssMetaProp): CssRulePropSyntax = new CssRulePropSyntax(name.propName)
 
-  implicit def intScalarOps(n: Int)       = new CssNumberScalarOps(n.toDouble)
-  implicit def doubleScalarOps(n: Double) = new CssNumberScalarOps(n)
-  implicit def longScalarOps(n: Long)     = new CssNumberScalarOps(n.toDouble)
+  implicit def intScalarOps(n: Int): CssNumberScalarOps       = new CssNumberScalarOps(n.toDouble)
+  implicit def doubleScalarOps(n: Double): CssNumberScalarOps = new CssNumberScalarOps(n)
+  implicit def longScalarOps(n: Long): CssNumberScalarOps     = new CssNumberScalarOps(n.toDouble)
 
-  implicit def cssInterpolators(sc: StringContext) = new CssInterpolators(sc)
+  implicit def cssInterpolators(sc: StringContext): CssInterpolators = new CssInterpolators(sc)
 
   // Copied here from eu.timepit.refined.auto.autoRefineV so hsl(x, y, z) just works.
   implicit def autoRefineV[T, P](t: T)(implicit rt: RefType[Refined], v: Validate[T, P]): Refined[T, P] =
