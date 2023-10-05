@@ -123,6 +123,7 @@ trait CssProps {
   val textOverflow             = prop"text-overflow"
   val textTransform            = prop"text-transform"
   val textUnderlineOffset      = prop"text-underline-offset"
+  val textWrap                 = prop"text-wrap"
   val top                      = prop"top"
   val transform                = prop"transform"
   val transformOrigin          = prop"transform-origin"
