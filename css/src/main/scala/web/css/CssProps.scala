@@ -136,6 +136,7 @@ trait CssProps {
   val visibility               = prop"visibility"
   val whiteSpace               = prop"white-space"
   val width                    = prop"width"
+  val wordWrap                 = prop"word-wrap"
   val zIndex                   = prop"z-index"
 
   object webkit {
