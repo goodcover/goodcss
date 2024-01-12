@@ -86,9 +86,45 @@ object CssValue {
     }
 }
 
+sealed trait CssKeyword extends CssValue {
+  def keyword: String
+
+  override def equals(other: Any): Boolean = other match {
+    case CssKeyword(otherKeyword) => otherKeyword == keyword
+    case _ => false
+  }
+}
+
+object CssKeyword {
+  @inline def apply(kw: String): CssKeyword = new CssKeyword {
+    override val keyword: String = kw
+  }
+
+  def unapply(k: CssKeyword): Some[String] = Some(k.keyword)
+}
+
+sealed trait CssBasePolymorphicKeywords[A] {
+
+  trait KeywordCompanion {
+    def apply(keyword: String): A with CssKeyword
+  }
+
+  val Keyword: KeywordCompanion
+
+  val auto: A    = Keyword(kw.auto.keyword)
+  val inherit: A = Keyword(kw.inherit.keyword)
+  val initial: A = Keyword(kw.initial.keyword)
+  val unset: A   = Keyword(kw.unset.keyword)
+}
+
 sealed trait CssSize extends CssValue
 
-final case class CssKeyword(keyword: String) extends CssValue with CssSize
+object CssSize extends CssBasePolymorphicKeywords[CssSize] {
+  final case class Keyword private (keyword: String) extends CssKeyword with CssSize
+
+  object Keyword extends KeywordCompanion
+}
+
 
 final case class CssQuoted(text: String) extends CssValue
 
@@ -112,6 +148,12 @@ final case class CssValueVar(varName: String) extends CssValue {
 }
 
 sealed trait CssColor extends CssValue
+
+object CssColor extends CssBasePolymorphicKeywords[CssColor] {
+  final case class Keyword private (keyword: String) extends CssKeyword with CssColor
+
+  object Keyword extends KeywordCompanion
+}
 
 final case class CssHsl(h: Hue, s: BoundedPercent, l: BoundedPercent, a: BoundedFloat = 1.0) extends CssColor
 
